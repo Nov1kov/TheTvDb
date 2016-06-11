@@ -1,0 +1,5 @@
+<resources>
+    <string name="app_name">NovikovTheTvDb</string>
+    <string name="title_show_detail">Show Detail</string>
+    <string name="failConnection">fail with connection</string>
+</resources>

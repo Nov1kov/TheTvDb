@@ -14,7 +14,7 @@ import android.view.MenuItem;
  * An activity representing a single Show detail screen. This
  * activity is only used narrow width devices. On tablet-size devices,
  * item details are presented side-by-side with a list of items
- * in a {@link ShowListActivity}.
+ * in a {@link SeriesListActivity}.
  */
 public class ShowDetailActivity extends AppCompatActivity {
 
@@ -73,7 +73,7 @@ public class ShowDetailActivity extends AppCompatActivity {
             //
             // http://developer.android.com/design/patterns/navigation.html#up-vs-back
             //
-            navigateUpTo(new Intent(this, ShowListActivity.class));
+            navigateUpTo(new Intent(this, SeriesListActivity.class));
             return true;
         }
         return super.onOptionsItemSelected(item);

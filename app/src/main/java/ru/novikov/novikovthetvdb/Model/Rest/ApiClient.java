@@ -87,7 +87,7 @@ public class ApiClient {
         }
     }
 
-    public void GetHeadSeries(final long seriesId, final ResponseSuccessful<SeriesResponse> responseSucc){
+    public void GetSeriesInfo(final long seriesId, final ResponseSuccessful<SeriesResponse> responseSucc){
         TvDbRestApi tvDbRestApi = createService(TvDbRestApi.class);
         Call<SeriesResponse> responseCall = tvDbRestApi.getSeries(seriesId);
         responseCall.enqueue(new Callback<SeriesResponse>() {

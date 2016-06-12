@@ -9,11 +9,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.SeriesResponse;
+import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Series;
 
 /**
  * A fragment representing a single Show detail screen.
- * This fragment is either contained in a {@link ShowListActivity}
+ * This fragment is either contained in a {@link SeriesListActivity}
  * in two-pane mode (on tablets) or a {@link ShowDetailActivity}
  * on handsets.
  */
@@ -27,7 +27,7 @@ public class ShowDetailFragment extends Fragment {
     /**
      * The dummy content this fragment is presenting.
      */
-    private SeriesResponse.Series currentSeries;
+    private Series currentSeries;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -44,7 +44,7 @@ public class ShowDetailFragment extends Fragment {
             // Load the dummy content specified by the fragment
             // arguments. In a real-world scenario, use a Loader
             // to load content from a content provider.
-            currentSeries = app().getDataProvider().getSeries(getArguments().getString(ARG_ITEM_ID));
+            app().getDataProvider().getSeriesDetail(getArguments().getLong(ARG_ITEM_ID, 0));
 
             Activity activity = this.getActivity();
             CollapsingToolbarLayout appBarLayout = (CollapsingToolbarLayout) activity.findViewById(R.id.toolbar_layout);

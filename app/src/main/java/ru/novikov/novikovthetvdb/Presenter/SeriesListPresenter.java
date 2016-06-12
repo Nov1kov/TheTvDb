@@ -15,7 +15,7 @@ public class SeriesListPresenter {
     }
 
     public void loadSeriesList(){
-        seriesListView.getApp().getDataProvider().getSeriesList();
+        //seriesListView.getApp().getDataProvider().getSeriesList();
     }
 
 

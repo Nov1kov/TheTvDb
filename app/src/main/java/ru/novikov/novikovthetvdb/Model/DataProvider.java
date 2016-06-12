@@ -1,17 +1,16 @@
 package ru.novikov.novikovthetvdb.Model;
 
-import android.database.Observable;
-
 import java.util.List;
 
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Series;
-import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.SeriesData;
 import ru.novikov.novikovthetvdb.Model.Rest.ResponseSuccessful;
 
 /**
  *
  */
 public class DataProvider {
+
+    public final static int SERIES_PORTION_COUNT = 20;
 
     private RestRepository remoteRepository;
     private MemoryRepository memoryRepository;
@@ -20,7 +19,6 @@ public class DataProvider {
     public DataProvider(RestRepository repository){
         this.remoteRepository = repository;
         memoryRepository = new MemoryRepository();
-
     }
 
     public void setSubscriber(DataProviderSubscriber subscriber){
@@ -29,6 +27,10 @@ public class DataProvider {
 
     public void deleteSubscriber(){
         this.subscriber = null;
+    }
+
+    public void getSeriesDetailCallBack(final long seriesId, ResponseSuccessful<Series> callback){
+        remoteRepository.getSeries(seriesId, callback);
     }
 
     public void getSeriesDetail(final long seriesId){
@@ -42,26 +44,24 @@ public class DataProvider {
                         subscriber.receivedSeries(body);
                 }
             });
-
-        }else {
+        } else {
             if (subscriber != null)
                 subscriber.receivedSeries(memObj);
         }
 
     }
 
-    public void getLastSeriesList(){
-        remoteRepository.getSeriesLastWeek(new ResponseSuccessful<List<SeriesData>>() {
+    public void getFullSeriesList(int from){
+        remoteRepository.getLastSeriesList(from, SERIES_PORTION_COUNT, new ResponseSuccessful<List<Series>>() {
             @Override
-            public void response(List<SeriesData> body) {
-                for (int i = 0; i < 20; i++) {
-                    getSeriesDetail(body.get(i).id);
-                }
+            public void response(List<Series> body) {
+                if (subscriber != null)
+                    subscriber.receivedSeriesList(body);
             }
         });
     }
 
-    public void getSeriesList(){
+/*    public void getSeriesList(){
         remoteRepository.getSeriesLastWeek(new ResponseSuccessful<List<SeriesData>>() {
             @Override
             public void response(List<SeriesData> body) {
@@ -69,5 +69,5 @@ public class DataProvider {
                     subscriber.receivedSeriesList(body);
             }
         });
-    }
+    }*/
 }

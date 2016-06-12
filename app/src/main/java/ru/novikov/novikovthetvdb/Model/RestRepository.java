@@ -1,5 +1,6 @@
 package ru.novikov.novikovthetvdb.Model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ru.novikov.novikovthetvdb.Model.Rest.AfterLogin;
@@ -8,6 +9,7 @@ import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Series;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.SeriesData;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.SeriesResponse;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.SeriesRecentResponse;
+import ru.novikov.novikovthetvdb.Model.Rest.ResponseFail;
 import ru.novikov.novikovthetvdb.Model.Rest.ResponseSuccessful;
 
 /*
@@ -30,7 +32,36 @@ public class RestRepository {
                     public void response(SeriesResponse body) {
                         callback.response(body.data);
                     }
-                });
+                }, null);
+            }
+        });
+    }
+
+    public void getLastSeriesList(final int from, final int seriesCount, final ResponseSuccessful<List<Series>> callback){
+        final ArrayList<Series> series = new ArrayList<>();
+        getSeriesLastWeek(new ResponseSuccessful<List<SeriesData>>() {
+            @Override
+            public void response(final List<SeriesData> seriesDatas) {
+                for (int i = from; (i < from + seriesCount) && (i < seriesDatas.size()); i++) {
+
+                    client.GetSeriesInfo(seriesDatas.get(i).id, new ResponseSuccessful<SeriesResponse>() {
+                        @Override
+                        public void response(SeriesResponse body) {
+                            series.add(body.data);
+                            if ((series.size() == seriesCount) || (series.size() == seriesDatas.size())){
+                                callback.response(series);
+                            }
+                        }
+                    }, new ResponseFail() {
+                        @Override
+                        public void onFail(String message) {
+                            series.add(new Series());
+                            if ((series.size() == seriesCount) || (series.size() == seriesDatas.size())){
+                                callback.response(series);
+                            }
+                        }
+                    });
+                }
             }
         });
     }
@@ -41,13 +72,13 @@ public class RestRepository {
             @Override
             public void loginSucses() {
                 int fromTime = (int) (System.currentTimeMillis() / 1000);
-                int toTime = (int) (System.currentTimeMillis() / 1000) - 5000; //
+                int toTime = (int) (System.currentTimeMillis() / 1000) - 50000; //
                 client.GetSeriesRecent(String.valueOf(toTime), null, new ResponseSuccessful<SeriesRecentResponse>() {
                     @Override
                     public void response(SeriesRecentResponse body) {
                         callback.response(body.data);
                     }
-                });
+                }, null);
             }
         });
     }

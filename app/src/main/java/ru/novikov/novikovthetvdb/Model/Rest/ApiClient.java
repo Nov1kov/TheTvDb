@@ -1,5 +1,6 @@
 package ru.novikov.novikovthetvdb.Model.Rest;
 
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import java.io.IOException;
@@ -32,7 +33,7 @@ public class ApiClient {
 
     private OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
     private Retrofit.Builder builder;
-    private NetworkFail networkFail;
+    TvDbRestApi tvDbAuthApi;
 
     private String authToken = null;
 
@@ -76,56 +77,72 @@ public class ApiClient {
         if (authToken != null){
             afterLogin.loginSucses();
             return true;
-        }else{
+        } else {
             Authentication(login, pass, new ResponseSuccessful<String>() {
                 @Override
                 public void response(String body) {
                     afterLogin.loginSucses();
                 }
-            });
+            }, null);
             return false;
         }
     }
 
-    public void GetSeriesInfo(final long seriesId, final ResponseSuccessful<SeriesResponse> responseSucc){
-        TvDbRestApi tvDbRestApi = createService(TvDbRestApi.class);
-        Call<SeriesResponse> responseCall = tvDbRestApi.getSeries(seriesId);
+    public void GetSeriesInfo(final long seriesId,
+                              final ResponseSuccessful<SeriesResponse> responseSucc,
+                              @Nullable final ResponseFail responseFail){
+        Call<SeriesResponse> responseCall = tvDbAuthApi.getSeries(seriesId);
+
         responseCall.enqueue(new Callback<SeriesResponse>() {
             @Override
             public void onResponse(Call<SeriesResponse> call, retrofit2.Response<SeriesResponse> response) {
                 if (response.code() == 200){
                     responseSucc.response(response.body());
+                } else {
+                    if (responseFail != null) {
+                        responseFail.onFail("");
+                    }
                 }
             }
 
             @Override
             public void onFailure(Call<SeriesResponse> call, Throwable t) {
-                networkFail.onFail("");
+                if (responseFail != null) {
+                    responseFail.onFail("");
+                }
             }
         });
     }
 
-    public void GetSeriesRecent(final String fromtime, final String toTime, final ResponseSuccessful<SeriesRecentResponse>  responseSucc)
+    public void GetSeriesRecent(final String fromtime, final String toTime,
+                                final ResponseSuccessful<SeriesRecentResponse>  responseSucc,
+                                @Nullable final ResponseFail responseFail)
     {
-        TvDbRestApi tvDbRestApi = createService(TvDbRestApi.class);
-        Call<SeriesRecentResponse> responseCall = tvDbRestApi.seriesRecent(fromtime, toTime);
+        Call<SeriesRecentResponse> responseCall = tvDbAuthApi.seriesRecent(fromtime, toTime);
         responseCall.enqueue(new Callback<SeriesRecentResponse>() {
             @Override
             public void onResponse(Call<SeriesRecentResponse> call, retrofit2.Response<SeriesRecentResponse> response) {
                 if (response.code() == 200){
                     responseSucc.response(response.body());
+                } else {
+                    if (responseFail != null) {
+                        responseFail.onFail("");
+                    }
                 }
-
             }
 
             @Override
             public void onFailure(Call<SeriesRecentResponse> call, Throwable t) {
-                networkFail.onFail("");
+                if (responseFail != null) {
+                    responseFail.onFail("");
+                }
             }
         });
     }
 
-    public void Authentication(final String username, final String userkey, final ResponseSuccessful<String>  responseSucc){
+    public void Authentication(final String username, final String userkey,
+                               final ResponseSuccessful<String>  responseSucc,
+                               @Nullable final ResponseFail responseFail){
         Login login = new Login(TVDB_APIKEY, username, userkey);
         TvDbRestApi tvDbRestApi = createService(TvDbRestApi.class);
         Call<Token> token = tvDbRestApi.login(login);
@@ -135,15 +152,20 @@ public class ApiClient {
             public void onResponse(Call<Token> call, retrofit2.Response<Token> response) {
                 if (response.code() == 200){
                     authToken = response.body().token;
+                    tvDbAuthApi = createService(TvDbRestApi.class);
                     responseSucc.response(authToken);
                 }else if (response.code() == 401){
-                    Log.e(TAG, "Error auth");
+                    if (responseFail != null) {
+                        responseFail.onFail("");
+                    }
                 }
             }
 
             @Override
             public void onFailure(Call<Token> call, Throwable t) {
-                networkFail.onFail("");
+                if (responseFail != null) {
+                    responseFail.onFail("");
+                }
             }
         });
 

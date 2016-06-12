@@ -1,6 +1,5 @@
 package ru.novikov.novikovthetvdb.Adapters;
 
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,64 +7,96 @@ import android.view.ViewGroup;
 
 import java.util.List;
 
-import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.SeriesData;
+import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Series;
 import ru.novikov.novikovthetvdb.R;
 
 
 /**
  * adapter for tv shows list
  */
-public class SeriesListAdapter extends RecyclerView.Adapter<SeriesViewHolder> {
+public class SeriesListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     private final int VIEW_TYPE_ITEM = 0;
     private final int VIEW_TYPE_LOADING = 1;
 
     private boolean isLoading;
-    private int visibleThreshold = 5;
-    private int lastVisibleItem, totalItemCount;
+    private static final int VISIBLE_THRESHOLD = 5;
 
-    private List<SeriesData> mValues;
+    private List<Series> mValues;
     private ShowListClickListener showListClickListener;
 
-    public SeriesListAdapter(List<SeriesData> items, ShowListClickListener listener) {
+    public SeriesListAdapter(List<Series> items, ShowListClickListener listener) {
         mValues = items;
         showListClickListener = listener;
-
-
     }
 
-    public void updateList(List<SeriesData> items){
+    public void updateList(List<Series> items){
         mValues = items;
         notifyDataSetChanged();
     }
 
     @Override
-    public SeriesViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.show_list_content, parent, false);
-        return new SeriesViewHolder(view);
+    public int getItemViewType(int position) {
+        return mValues.get(position) == null ? VIEW_TYPE_LOADING : VIEW_TYPE_ITEM;
     }
 
     @Override
-    public void onBindViewHolder(final SeriesViewHolder holder, int position) {
-        holder.mItem = mValues.get(position);
-        holder.SeriesNameTextView.setText(String.valueOf(mValues.get(position).lastUpdated));
-        //holder.SeriesOverviewTextView.setText(mValues.get(position).overview);
+    public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        if (viewType == VIEW_TYPE_ITEM) {
+            View view = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.show_list_content, parent, false);
+            return new SeriesViewHolder(view);
 
-        holder.mView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showListClickListener.OnShowClick(holder.mItem.id, v);
-            }
-        });
+        } else if (viewType == VIEW_TYPE_LOADING) {
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.progresbar_item, parent, false);
+            return new LoadingViewHolder(view);
+        }
+        return null;
+    }
+
+    @Override
+    public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
+        if (holder instanceof SeriesViewHolder) {
+            Series item = mValues.get(position);
+            final SeriesViewHolder seriesViewHolder = (SeriesViewHolder) holder;
+            seriesViewHolder.mItem = item;
+            seriesViewHolder.SeriesNameTextView.setText(String.valueOf(item.lastUpdated));
+
+            seriesViewHolder.SeriesNameTextView.setText(item.seriesName);
+            seriesViewHolder.SeriesOverviewTextView.setText(item.overview);
+
+            seriesViewHolder.mView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    showListClickListener.OnShowClick(seriesViewHolder.mItem.id, v);
+                }
+            });
+        } else if (holder instanceof LoadingViewHolder) {
+            LoadingViewHolder loadingViewHolder = (LoadingViewHolder) holder;
+            loadingViewHolder.progressBar.setIndeterminate(true);
+        }
     }
 
     @Override
     public int getItemCount() {
-        return mValues.size();
+        return mValues == null ? 0 : mValues.size();
+    }
+
+    public boolean needLoadedMore(int totalItemCount, int lastVisibleItem) {
+        return !isLoading && totalItemCount <= (lastVisibleItem + VISIBLE_THRESHOLD);
+    }
+
+    public void showProgressBar() {
+        isLoading = true;
+        mValues.add(null);
+        notifyItemInserted(mValues.size() - 1);
     }
 
     public interface ShowListClickListener{
         void OnShowClick(long id, View v);
+    }
+
+    public void setLoaded() {
+        isLoading = false;
     }
 }

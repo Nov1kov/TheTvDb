@@ -1,6 +1,6 @@
 package ru.novikov.novikovthetvdb.Model.Rest;
 
-public interface NetworkFail {
+public interface ResponseFail {
 
     void onFail(String message);
 

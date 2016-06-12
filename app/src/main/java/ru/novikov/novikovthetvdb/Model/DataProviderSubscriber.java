@@ -10,7 +10,7 @@ import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.SeriesData;
  */
 public interface DataProviderSubscriber {
 
-    void receivedSeriesList(List<SeriesData> seriesDataList);
+    void receivedSeriesList(List<Series> seriesDataList);
 
     void receivedSeries(Series series);
 

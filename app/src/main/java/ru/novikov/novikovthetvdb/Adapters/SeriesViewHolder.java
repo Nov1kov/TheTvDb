@@ -5,6 +5,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Series;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.SeriesData;
 import ru.novikov.novikovthetvdb.R;
 
@@ -16,7 +17,7 @@ public class SeriesViewHolder extends RecyclerView.ViewHolder {
     public final ImageView SeriesImageView;
     public final TextView SeriesNameTextView;
     public final TextView SeriesOverviewTextView;
-    public SeriesData mItem;
+    public Series mItem;
 
     public SeriesViewHolder(View view) {
         super(view);

@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.util.Log;
 import android.view.View;
 
 
@@ -63,7 +64,7 @@ public class SeriesListActivity extends AppCompatActivity implements DataProvide
         setupRecyclerView((RecyclerView) recyclerView);
 
         getApp().getDataProvider().setSubscriber(this);
-        getApp().getDataProvider().getSeriesList();
+        getApp().getDataProvider().getFullSeriesList(0);
 
         if (findViewById(R.id.show_detail_container) != null) {
             // The detail container view will be present only in the
@@ -75,7 +76,7 @@ public class SeriesListActivity extends AppCompatActivity implements DataProvide
     }
 
     private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        adapter = new SeriesListAdapter(new ArrayList<SeriesData>(),
+        adapter = new SeriesListAdapter(new ArrayList<Series>(),
                 new SeriesListAdapter.ShowListClickListener() {
                     @Override
                     public void OnShowClick(long id, View v) {
@@ -105,22 +106,24 @@ public class SeriesListActivity extends AppCompatActivity implements DataProvide
 
                 int totalItemCount = linearLayoutManager.getItemCount();
                 int lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
-/*
-                if (!isLoading && totalItemCount <= (lastVisibleItem + visibleThreshold)) {
-                    if (mOnLoadMoreListener != null) {
-                        mOnLoadMoreListener.onLoadMore();
-                    }
-                    isLoading = true;
-                }*/
+
+                if (adapter.needLoadedMore(totalItemCount, lastVisibleItem)){
+                    //TODO подгружаем больше
+                    adapter.showProgressBar();
+                }
+
+
             }
         });
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(adapter);
+        adapter.showProgressBar();
     }
 
     @Override
-    public void receivedSeriesList(List<SeriesData> seriesDataList) {
+    public void receivedSeriesList(List<Series> seriesDataList) {
         adapter.updateList(seriesDataList);
+        adapter.setLoaded();
     }
 
     @Override

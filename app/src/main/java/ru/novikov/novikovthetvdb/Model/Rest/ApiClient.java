@@ -28,11 +28,11 @@ public class ApiClient {
     private static final String TAG = "ApiClient";
     private static final String TVDB_BASE_URL = "https://api.thetvdb.com";
     private static final String TVDB_VERSION = "2";
-    private static final String TVDB_APIKEY = "3349F1D32F314DE9";
     public static final Object TAG_CALL = new Object();
 
     private final String pass;
     private final String login;
+    private final String apiKey;
 
     private OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
     private Retrofit.Builder builder;
@@ -40,14 +40,20 @@ public class ApiClient {
 
     private String authToken = null;
 
-    public ApiClient(final String login, final String pass) {
+    public ApiClient(final String login, final String pass, final String apiKey) {
         builder = new Retrofit.Builder()
                         .baseUrl(TVDB_BASE_URL)
                         .addConverterFactory(GsonConverterFactory.create());
+        tvDbAuthApi = createService(TvDbRestApi.class);
         this.login = login;
         this.pass = pass;
+        this.apiKey = apiKey;
     }
 
+    public void setAuthToken(String authToken){
+        this.authToken = authToken;
+        tvDbAuthApi = createService(TvDbRestApi.class);
+    }
 
     private  <S> S createService(Class<S> serviceClass) {
         httpClient.addInterceptor(new Interceptor() {
@@ -58,13 +64,10 @@ public class ApiClient {
                 // Request customization: add request headers
                 Request.Builder requestBuilder = original.newBuilder()
                         //.header("Content-Type", "application/json")
+                        .header("Authorization", "Bearer " + authToken)
                         .header("Accept", "application/json") //vnd.thetvdb.v" + TVDB_VERSION
                         .method(original.method(), original.body())
                         .tag(TAG_CALL);
-
-                if (authToken != null){
-                    requestBuilder.header("Authorization", "Bearer " + authToken);
-                }
 
                 Request request = requestBuilder.build();
                 return chain.proceed(request);
@@ -74,21 +77,6 @@ public class ApiClient {
         OkHttpClient client = httpClient.build();
         Retrofit retrofit = builder.client(client).build();
         return retrofit.create(serviceClass);
-    }
-
-    public boolean CheckAuth(final AfterLogin afterLogin){
-        if (authToken != null){
-            afterLogin.loginSucses();
-            return true;
-        } else {
-            Authentication(login, pass, new ResponseSuccessful<String>() {
-                @Override
-                public void response(String body) {
-                    afterLogin.loginSucses();
-                }
-            }, null);
-            return false;
-        }
     }
 
     private <S> Callback<S> getCallBack(final ResponseSuccessful<S> responseSucc,
@@ -144,19 +132,17 @@ public class ApiClient {
         responseCall.enqueue(getCallBack(responseSucc, responseFail));
     }
 
-    public void Authentication(final String username, final String userkey,
-                               final ResponseSuccessful<String>  responseSucc,
+    public void Authentication(final ResponseSuccessful<String>  responseSucc,
                                @Nullable final ResponseFail responseFail){
-        Login login = new Login(TVDB_APIKEY, username, userkey);
-        TvDbRestApi tvDbRestApi = createService(TvDbRestApi.class);
-        Call<Token> token = tvDbRestApi.login(login);
+        Login loginObj = new Login(apiKey, login, pass);
+        Call<Token> token = tvDbAuthApi.login(loginObj);
         token.enqueue(new Callback<Token>(){
 
             @Override
             public void onResponse(Call<Token> call, retrofit2.Response<Token> response) {
                 if (response.code() == 200){
                     authToken = response.body().token;
-                    tvDbAuthApi = createService(TvDbRestApi.class);
+
                     responseSucc.response(authToken);
                 }else if (response.code() == 401){
                     if (responseFail != null) {
@@ -173,5 +159,9 @@ public class ApiClient {
             }
         });
 
+    }
+
+    public boolean validAuthToken() {
+        return authToken != null;
     }
 }

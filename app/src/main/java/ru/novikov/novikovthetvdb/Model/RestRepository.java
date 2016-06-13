@@ -1,5 +1,7 @@
 package ru.novikov.novikovthetvdb.Model;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,10 +24,24 @@ import ru.novikov.novikovthetvdb.Model.Rest.ResponseSuccessful;
 */
 public class RestRepository {
 
+    private static final String TVDB_APIKEY = "3349F1D32F314DE9";
+    private static final String TAG = "RestRepository";
+
     private ApiClient client;
+    private SaverToken saverInfo;
 
     public RestRepository(){
-        client = new ApiClient("", "");
+        client = new ApiClient("", "", TVDB_APIKEY);
+    }
+
+    public void setSaverInfoListener(SaverToken saverInfo){
+        this.saverInfo = saverInfo;
+    }
+
+    public void setAuthToken(String authToken){
+        if (authToken != null)
+            Log.i(TAG, "set new token");
+        client.setAuthToken(authToken);
     }
 
     public void getEpisodes(final long seriesId, final String page, final ResponseSuccessful<List<Episode>> callback){
@@ -35,6 +51,24 @@ public class RestRepository {
                 callback.response(body.data);
             }
         }, null);
+    }
+
+    private boolean CheckAuth(final AfterLogin afterLogin){
+        if (client.validAuthToken()){
+            afterLogin.loginSuccessfully();
+            return true;
+        } else {
+            client.Authentication(new ResponseSuccessful<String>() {
+                @Override
+                public void response(String token) {
+                    if (saverInfo != null)
+                        saverInfo.onSaveToken(token);
+                    client.setAuthToken(token);
+                    afterLogin.loginSuccessfully();
+                }
+            }, null);
+            return false;
+        }
     }
 
     public void getActors(final long seriesId, final ResponseSuccessful<List<Actor>> callback){
@@ -47,9 +81,9 @@ public class RestRepository {
     }
 
     public void getSeries(final long seriesId, final ResponseSuccessful<Series> callback){
-        client.CheckAuth(new AfterLogin() {
+        CheckAuth(new AfterLogin() {
             @Override
-            public void loginSucses() {
+            public void loginSuccessfully() {
                 client.GetSeriesInfo(seriesId, new ResponseSuccessful<SeriesResponse>() {
                     @Override
                     public void response(SeriesResponse body) {
@@ -91,9 +125,9 @@ public class RestRepository {
 
     public void getSeriesLastWeek(final ResponseSuccessful<List<SeriesData>> callback) {
 
-        client.CheckAuth(new AfterLogin() {
+        CheckAuth(new AfterLogin() {
             @Override
-            public void loginSucses() {
+            public void loginSuccessfully() {
                 int fromTime = (int) (System.currentTimeMillis() / 1000);
                 int toTime = (int) (System.currentTimeMillis() / 1000) - 50000; //
                 client.GetSeriesRecent(String.valueOf(toTime), null, new ResponseSuccessful<SeriesRecentResponse>() {
@@ -104,6 +138,13 @@ public class RestRepository {
                 }, null);
             }
         });
+    }
+
+    /*
+    for save token to shared pref
+     */
+    public interface SaverToken {
+        void onSaveToken(String token);
     }
 
 }

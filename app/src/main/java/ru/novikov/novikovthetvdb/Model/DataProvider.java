@@ -11,18 +11,22 @@ import ru.novikov.novikovthetvdb.Model.Rest.ResponseSuccessful;
 /**
  *
  */
-public class DataProvider {
+public class DataProvider implements RestRepository.SaverToken {
 
     public final static int SERIES_PORTION_COUNT = 20;
 
     private RestRepository remoteRepository;
+    private PreferencesRepository preferencesRepository;
     private MemoryRepository memoryRepository;
     private List<DataProviderSubscriber> subscribers;
 
-    public DataProvider(RestRepository repository){
+    public DataProvider(RestRepository repository, PreferencesRepository preferencesRepository){
         this.remoteRepository = repository;
         memoryRepository = new MemoryRepository();
         subscribers = new ArrayList<>();
+        this.preferencesRepository = preferencesRepository;
+        remoteRepository.setAuthToken(preferencesRepository.getKeyTvdbToken());
+        remoteRepository.setSaverInfoListener(this);
     }
 
     public void setSubscriber(DataProviderSubscriber subscriber){
@@ -81,5 +85,11 @@ public class DataProvider {
                     subscriber.receiveActors(body);
             }
         });
+    }
+
+    @Override
+    public void onSaveToken(String token) {
+        if (preferencesRepository != null)
+            preferencesRepository.saveTvDbToken(token);
     }
 }

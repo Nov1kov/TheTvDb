@@ -60,18 +60,6 @@ public class SeriesDetailFragment extends Fragment implements DataProviderSubscr
         }
     }
 
-    @Override
-    public void onDestroyView() {
-        getApp().getDataProvider().deleteSubscriber(this);
-        super.onDestroyView();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        getApp().getDataProvider().setSubscriber(this);
-    }
-
     private SeriesApp getApp(){
         return (SeriesApp) getActivity().getApplication();
     }
@@ -93,7 +81,15 @@ public class SeriesDetailFragment extends Fragment implements DataProviderSubscr
         episodesRecyclerView.setAdapter(episodesListAdapter);
         episodesRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        getApp().getDataProvider().setSubscriber(this);
+
         return rootView;
+    }
+
+    @Override
+    public void onDestroyView() {
+        getApp().getDataProvider().deleteSubscriber(this);
+        super.onDestroyView();
     }
 
     @Override
@@ -109,11 +105,14 @@ public class SeriesDetailFragment extends Fragment implements DataProviderSubscr
         if (appBarLayout != null) {
             appBarLayout.setTitle(currentSeries.seriesName);
         }
-        if (currentSeries.overview == null || currentSeries.overview.equals(""))
-            overviewTextView.setText(R.string.empty_overview);
-        else{
-            overviewTextView.setText(currentSeries.overview);
+        if (overviewTextView != null){
+            if (currentSeries.overview == null || currentSeries.overview.equals(""))
+                overviewTextView.setText(R.string.empty_overview);
+            else{
+                overviewTextView.setText(currentSeries.overview);
+            }
         }
+
 
         getApp().getDataProvider().getActors(currentSeries.id);
         getApp().getDataProvider().getEpisodes(currentSeries.id, "1");

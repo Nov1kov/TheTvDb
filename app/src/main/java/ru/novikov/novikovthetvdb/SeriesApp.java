@@ -3,6 +3,7 @@ package ru.novikov.novikovthetvdb;
 import android.app.Application;
 
 import ru.novikov.novikovthetvdb.Model.DataProvider;
+import ru.novikov.novikovthetvdb.Model.PreferencesRepository;
 import ru.novikov.novikovthetvdb.Model.RestRepository;
 
 public class SeriesApp extends Application {
@@ -12,8 +13,9 @@ public class SeriesApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        PreferencesRepository preferencesRepository = new PreferencesRepository(getBaseContext());
         RestRepository repository = new RestRepository();
-        dataProvider = new DataProvider(repository);
+        dataProvider = new DataProvider(repository, preferencesRepository);
     }
 
     public DataProvider getDataProvider(){

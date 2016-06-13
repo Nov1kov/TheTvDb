@@ -7,4 +7,7 @@
     <string name="actors">actors</string>
     <string name="episodes">Episodes</string>
     <string name="number_of_episode" formatted="false">season: %s episode: %s</string>
+    <string name="google_login">google login</string>
+    <string name="favorites_series">favorites series</string>
+    <string name="pick_account">account picked</string>
 </resources>

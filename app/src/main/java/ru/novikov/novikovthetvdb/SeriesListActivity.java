@@ -9,13 +9,16 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
 
 import ru.novikov.novikovthetvdb.Adapters.ItemListClickListener;
 import ru.novikov.novikovthetvdb.Adapters.SeriesListAdapter;
+import ru.novikov.novikovthetvdb.Login.AuthOnGoogle;
 import ru.novikov.novikovthetvdb.Model.DataProviderSubscriber;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Actor;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Episode;
@@ -41,6 +44,8 @@ public class SeriesListActivity extends AppCompatActivity implements DataProvide
     private boolean mTwoPane;
     private SeriesListAdapter adapter;
 
+    private AuthOnGoogle authOnGoogle;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,17 +54,15 @@ public class SeriesListActivity extends AppCompatActivity implements DataProvide
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
-
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+                authOnGoogle.getGoogleToken();
             }
         });
 
-
+        authOnGoogle = new AuthOnGoogle(this);
 
         View recyclerView = findViewById(R.id.show_list);
         assert recyclerView != null;
@@ -117,6 +120,44 @@ public class SeriesListActivity extends AppCompatActivity implements DataProvide
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(adapter);
         adapter.showProgressBar();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.main_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case R.id.login:
+                authOnGoogle.getGoogleToken();
+                return true;
+            case R.id.favorites:
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        /*
+        if (requestCode == REQUEST_CODE_PICK_ACCOUNT) {
+            // Receiving a result from the AccountPicker
+            if (resultCode == RESULT_OK) {
+                mEmail = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+                // With the account name acquired, go get the auth token
+                getUsername();
+            } else if (resultCode == RESULT_CANCELED) {
+                // The account picker dialog closed without selecting an account.
+                // Notify users that they must pick an account to proceed.
+                Toast.makeText(this, R.string.pick_account, Toast.LENGTH_SHORT).show();
+            }
+        }*/
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     @Override

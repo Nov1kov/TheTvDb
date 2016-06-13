@@ -1,0 +1,50 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+     android:layout_height="fill_parent"
+    android:layout_width="fill_parent"
+    tools:context=".SeriesDetailFragment"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/overview"
+        style="?android:attr/textAppearanceSmall"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:maxHeight="100dp"
+        android:padding="16dp"
+        android:textIsSelectable="true"
+         />
+
+    <TextView
+        style="?android:attr/textAppearanceLarge"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="@string/actors"
+        />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/actorsRecyclerView"
+        android:layout_width="match_parent"
+        android:minHeight="50dp"
+        android:layout_height="wrap_content">
+    </android.support.v7.widget.RecyclerView>
+
+    <TextView
+        style="?android:attr/textAppearanceLarge"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="@string/episodes"
+        />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/episodesRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </android.support.v7.widget.RecyclerView>
+
+</LinearLayout>
+
+

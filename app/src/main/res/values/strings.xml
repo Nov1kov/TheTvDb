@@ -2,4 +2,9 @@
     <string name="app_name">NovikovTheTvDb</string>
     <string name="title_show_detail">Show Detail</string>
     <string name="failConnection">fail with connection</string>
+    <string name="loading_fail">Loading last series fail</string>
+    <string name="empty_overview">overview is empty</string>
+    <string name="actors">actors</string>
+    <string name="episodes">Episodes</string>
+    <string name="number_of_episode" formatted="false">season: %s episode: %s</string>
 </resources>

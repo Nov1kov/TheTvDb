@@ -13,6 +13,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Actors;
+import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Episode;
+import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Episodes;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.SeriesResponse;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.SeriesRecentResponse;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.TvDbRestApi;
@@ -46,7 +49,7 @@ public class ApiClient {
     }
 
 
-    public <S> S createService(Class<S> serviceClass) {
+    private  <S> S createService(Class<S> serviceClass) {
         httpClient.addInterceptor(new Interceptor() {
             @Override
             public Response intercept(Interceptor.Chain chain) throws IOException {
@@ -88,14 +91,11 @@ public class ApiClient {
         }
     }
 
-    public void GetSeriesInfo(final long seriesId,
-                              final ResponseSuccessful<SeriesResponse> responseSucc,
-                              @Nullable final ResponseFail responseFail){
-        Call<SeriesResponse> responseCall = tvDbAuthApi.getSeries(seriesId);
-
-        responseCall.enqueue(new Callback<SeriesResponse>() {
+    private <S> Callback<S> getCallBack(final ResponseSuccessful<S> responseSucc,
+                                        @Nullable final ResponseFail responseFail){
+        return new Callback<S>() {
             @Override
-            public void onResponse(Call<SeriesResponse> call, retrofit2.Response<SeriesResponse> response) {
+            public void onResponse(Call<S> call, retrofit2.Response<S> response) {
                 if (response.code() == 200){
                     responseSucc.response(response.body());
                 } else {
@@ -106,38 +106,42 @@ public class ApiClient {
             }
 
             @Override
-            public void onFailure(Call<SeriesResponse> call, Throwable t) {
+            public void onFailure(Call<S> call, Throwable t) {
                 if (responseFail != null) {
                     responseFail.onFail("");
                 }
             }
-        });
+        };
+    }
+
+    public void GetEpisodes(final long seriesId,
+                            String page,
+                          ResponseSuccessful<Episodes> responseSucc,
+                          @Nullable ResponseFail responseFail){
+        Call<Episodes> responseCall = tvDbAuthApi.episodes(seriesId, page);
+        responseCall.enqueue(getCallBack(responseSucc, responseFail));
+    }
+
+    public void GetActors(final long seriesId,
+                                ResponseSuccessful<Actors> responseSucc,
+                              @Nullable ResponseFail responseFail){
+        Call<Actors> responseCall = tvDbAuthApi.actors(seriesId);
+        responseCall.enqueue(getCallBack(responseSucc, responseFail));
+    }
+
+    public void GetSeriesInfo(final long seriesId,
+                              ResponseSuccessful<SeriesResponse> responseSucc,
+                              @Nullable ResponseFail responseFail){
+        Call<SeriesResponse> responseCall = tvDbAuthApi.getSeries(seriesId);
+        responseCall.enqueue(getCallBack(responseSucc, responseFail));
     }
 
     public void GetSeriesRecent(final String fromtime, final String toTime,
-                                final ResponseSuccessful<SeriesRecentResponse>  responseSucc,
-                                @Nullable final ResponseFail responseFail)
+                                ResponseSuccessful<SeriesRecentResponse>  responseSucc,
+                                @Nullable ResponseFail responseFail)
     {
         Call<SeriesRecentResponse> responseCall = tvDbAuthApi.seriesRecent(fromtime, toTime);
-        responseCall.enqueue(new Callback<SeriesRecentResponse>() {
-            @Override
-            public void onResponse(Call<SeriesRecentResponse> call, retrofit2.Response<SeriesRecentResponse> response) {
-                if (response.code() == 200){
-                    responseSucc.response(response.body());
-                } else {
-                    if (responseFail != null) {
-                        responseFail.onFail("");
-                    }
-                }
-            }
-
-            @Override
-            public void onFailure(Call<SeriesRecentResponse> call, Throwable t) {
-                if (responseFail != null) {
-                    responseFail.onFail("");
-                }
-            }
-        });
+        responseCall.enqueue(getCallBack(responseSucc, responseFail));
     }
 
     public void Authentication(final String username, final String userkey,

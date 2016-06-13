@@ -15,6 +15,7 @@
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:gravity="center_vertical"
         android:orientation="vertical"
         android:layout_marginStart="@dimen/text_margin">
 
@@ -22,15 +23,14 @@
         android:id="@+id/seriesName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?attr/textAppearanceLargePopupMenu"
+        android:textAppearance="?attr/textAppearanceListItem"
         android:text="Заголовок"/>
 
     <TextView
-        android:id="@+id/overview"
+        android:id="@+id/firstAired"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?attr/textAppearanceListItemSmall"
-        android:layout_marginTop="@dimen/text_margin"
         android:text="Описание"/>
 
     </LinearLayout>

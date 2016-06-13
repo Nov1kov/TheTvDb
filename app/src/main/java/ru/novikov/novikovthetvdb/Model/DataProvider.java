@@ -1,7 +1,10 @@
 package ru.novikov.novikovthetvdb.Model;
 
+import java.util.ArrayList;
 import java.util.List;
 
+import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Actor;
+import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Episode;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Series;
 import ru.novikov.novikovthetvdb.Model.Rest.ResponseSuccessful;
 
@@ -14,23 +17,21 @@ public class DataProvider {
 
     private RestRepository remoteRepository;
     private MemoryRepository memoryRepository;
-    private DataProviderSubscriber subscriber;
+    private List<DataProviderSubscriber> subscribers;
 
     public DataProvider(RestRepository repository){
         this.remoteRepository = repository;
         memoryRepository = new MemoryRepository();
+        subscribers = new ArrayList<>();
     }
 
     public void setSubscriber(DataProviderSubscriber subscriber){
-        this.subscriber = subscriber;
+        if (!subscribers.contains(subscriber))
+            subscribers.add(subscriber);
     }
 
-    public void deleteSubscriber(){
-        this.subscriber = null;
-    }
-
-    public void getSeriesDetailCallBack(final long seriesId, ResponseSuccessful<Series> callback){
-        remoteRepository.getSeries(seriesId, callback);
+    public void deleteSubscriber(DataProviderSubscriber subscriber){
+        subscribers.remove(subscriber);
     }
 
     public void getSeriesDetail(final long seriesId){
@@ -40,12 +41,13 @@ public class DataProvider {
                 @Override
                 public void response(Series body) {
                     memoryRepository.setSeries(body);
-                    if (subscriber != null)
+                    for (DataProviderSubscriber subscriber : subscribers){
                         subscriber.receivedSeries(body);
+                    }
                 }
             });
         } else {
-            if (subscriber != null)
+            for (DataProviderSubscriber subscriber : subscribers)
                 subscriber.receivedSeries(memObj);
         }
 
@@ -55,19 +57,29 @@ public class DataProvider {
         remoteRepository.getLastSeriesList(from, SERIES_PORTION_COUNT, new ResponseSuccessful<List<Series>>() {
             @Override
             public void response(List<Series> body) {
-                if (subscriber != null)
+                for (DataProviderSubscriber subscriber : subscribers)
                     subscriber.receivedSeriesList(body);
             }
         });
     }
 
-/*    public void getSeriesList(){
-        remoteRepository.getSeriesLastWeek(new ResponseSuccessful<List<SeriesData>>() {
+    public void getEpisodes(final long seriesId, final String page){
+        remoteRepository.getEpisodes(seriesId, page, new ResponseSuccessful<List<Episode>>() {
             @Override
-            public void response(List<SeriesData> body) {
-                if (subscriber != null)
-                    subscriber.receivedSeriesList(body);
+            public void response(List<Episode> body) {
+                for (DataProviderSubscriber subscriber : subscribers)
+                    subscriber.receiveEpisodes(body);
             }
         });
-    }*/
+    }
+
+    public void getActors(final long seriesId){
+        remoteRepository.getActors(seriesId, new ResponseSuccessful<List<Actor>>() {
+            @Override
+            public void response(List<Actor> body) {
+                for (DataProviderSubscriber subscriber : subscribers)
+                    subscriber.receiveActors(body);
+            }
+        });
+    }
 }

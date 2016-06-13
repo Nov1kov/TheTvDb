@@ -5,7 +5,7 @@ import android.app.Application;
 import ru.novikov.novikovthetvdb.Model.DataProvider;
 import ru.novikov.novikovthetvdb.Model.RestRepository;
 
-public class ShowsApp extends Application {
+public class SeriesApp extends Application {
 
     private DataProvider dataProvider;
 

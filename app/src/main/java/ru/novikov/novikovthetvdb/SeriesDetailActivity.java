@@ -16,12 +16,12 @@ import android.view.MenuItem;
  * item details are presented side-by-side with a list of items
  * in a {@link SeriesListActivity}.
  */
-public class ShowDetailActivity extends AppCompatActivity {
+public class SeriesDetailActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_show_detail);
+        setContentView(R.layout.activity_series_detail);
         Toolbar toolbar = (Toolbar) findViewById(R.id.detail_toolbar);
         setSupportActionBar(toolbar);
 
@@ -53,9 +53,9 @@ public class ShowDetailActivity extends AppCompatActivity {
             // Create the detail fragment and add it to the activity
             // using a fragment transaction.
             Bundle arguments = new Bundle();
-            arguments.putString(ShowDetailFragment.ARG_ITEM_ID,
-                    getIntent().getStringExtra(ShowDetailFragment.ARG_ITEM_ID));
-            ShowDetailFragment fragment = new ShowDetailFragment();
+            arguments.putLong(SeriesDetailFragment.ARG_ITEM_ID,
+                    getIntent().getLongExtra(SeriesDetailFragment.ARG_ITEM_ID, 0));
+            SeriesDetailFragment fragment = new SeriesDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.show_detail_container, fragment)

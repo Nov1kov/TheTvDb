@@ -5,6 +5,10 @@ import java.util.List;
 
 import ru.novikov.novikovthetvdb.Model.Rest.AfterLogin;
 import ru.novikov.novikovthetvdb.Model.Rest.ApiClient;
+import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Actor;
+import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Actors;
+import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Episode;
+import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Episodes;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Series;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.SeriesData;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.SeriesResponse;
@@ -14,6 +18,7 @@ import ru.novikov.novikovthetvdb.Model.Rest.ResponseSuccessful;
 
 /*
     remote repository with auto login
+    convert response json object to entity
 */
 public class RestRepository {
 
@@ -21,6 +26,24 @@ public class RestRepository {
 
     public RestRepository(){
         client = new ApiClient("", "");
+    }
+
+    public void getEpisodes(final long seriesId, final String page, final ResponseSuccessful<List<Episode>> callback){
+        client.GetEpisodes(seriesId, page, new ResponseSuccessful<Episodes>() {
+            @Override
+            public void response(Episodes body) {
+                callback.response(body.data);
+            }
+        }, null);
+    }
+
+    public void getActors(final long seriesId, final ResponseSuccessful<List<Actor>> callback){
+        client.GetActors(seriesId, new ResponseSuccessful<Actors>() {
+            @Override
+            public void response(Actors body) {
+                callback.response(body.data);
+            }
+        }, null);
     }
 
     public void getSeries(final long seriesId, final ResponseSuccessful<Series> callback){

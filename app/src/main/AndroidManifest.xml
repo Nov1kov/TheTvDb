@@ -3,7 +3,7 @@
     package="ru.novikov.novikovthetvdb">
 
     <application
-        android:name=".ShowsApp"
+        android:name=".SeriesApp"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -20,7 +20,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".ShowDetailActivity"
+            android:name=".SeriesDetailActivity"
             android:label="@string/title_show_detail"
             android:parentActivityName=".SeriesListActivity"
             android:theme="@style/AppTheme.NoActionBar">

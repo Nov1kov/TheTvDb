@@ -27,7 +27,7 @@
         android:layout_marginRight="16dp"
         app:layoutManager="LinearLayoutManager"
         tools:context=".SeriesListActivity"
-        tools:listitem="@layout/show_list_content" />
+        tools:listitem="@layout/series_list_item" />
 
     <FrameLayout
         android:id="@+id/show_detail_container"

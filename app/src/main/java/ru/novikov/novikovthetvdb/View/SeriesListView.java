@@ -3,9 +3,7 @@ package ru.novikov.novikovthetvdb.View;
 import java.util.List;
 
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.SeriesData;
-import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.SeriesRecentResponse;
-import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.SeriesResponse;
-import ru.novikov.novikovthetvdb.ShowsApp;
+import ru.novikov.novikovthetvdb.SeriesApp;
 
 /**
  *
@@ -18,6 +16,6 @@ public interface SeriesListView {
 
     void showConnectionError();
 
-    ShowsApp getApp();
+    SeriesApp getApp();
 
 }

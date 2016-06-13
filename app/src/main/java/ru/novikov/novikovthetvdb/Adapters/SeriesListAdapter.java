@@ -5,7 +5,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Series;
 import ru.novikov.novikovthetvdb.R;
@@ -23,15 +26,15 @@ public class SeriesListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     private static final int VISIBLE_THRESHOLD = 5;
 
     private List<Series> mValues;
-    private ShowListClickListener showListClickListener;
+    private ItemListClickListener itemListClickListener;
 
-    public SeriesListAdapter(List<Series> items, ShowListClickListener listener) {
+    public SeriesListAdapter(List<Series> items, ItemListClickListener listener) {
         mValues = items;
-        showListClickListener = listener;
+        itemListClickListener = listener;
     }
 
     public void updateList(List<Series> items){
-        mValues = items;
+        mValues.addAll(items);
         notifyDataSetChanged();
     }
 
@@ -44,7 +47,7 @@ public class SeriesListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         if (viewType == VIEW_TYPE_ITEM) {
             View view = LayoutInflater.from(parent.getContext())
-                    .inflate(R.layout.show_list_content, parent, false);
+                    .inflate(R.layout.series_list_item, parent, false);
             return new SeriesViewHolder(view);
 
         } else if (viewType == VIEW_TYPE_LOADING) {
@@ -60,15 +63,13 @@ public class SeriesListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             Series item = mValues.get(position);
             final SeriesViewHolder seriesViewHolder = (SeriesViewHolder) holder;
             seriesViewHolder.mItem = item;
-            seriesViewHolder.SeriesNameTextView.setText(String.valueOf(item.lastUpdated));
-
             seriesViewHolder.SeriesNameTextView.setText(item.seriesName);
-            seriesViewHolder.SeriesOverviewTextView.setText(item.overview);
-
+            SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy HH:mm", Locale.ROOT);
+            seriesViewHolder.firstAiredTextView.setText(sdf.format(new Date(item.lastUpdated * 1000)));
             seriesViewHolder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    showListClickListener.OnShowClick(seriesViewHolder.mItem.id, v);
+                    itemListClickListener.OnShowClick(seriesViewHolder.mItem.id, v);
                 }
             });
         } else if (holder instanceof LoadingViewHolder) {
@@ -92,11 +93,11 @@ public class SeriesListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
         notifyItemInserted(mValues.size() - 1);
     }
 
-    public interface ShowListClickListener{
-        void OnShowClick(long id, View v);
-    }
-
     public void setLoaded() {
+        if (getItemViewType(mValues.size() - 1) == VIEW_TYPE_LOADING){
+            mValues.remove(mValues.size() - 1);
+            notifyItemRemoved(mValues.size());
+        }
         isLoading = false;
     }
 }

@@ -6,7 +6,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Series;
-import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.SeriesData;
 import ru.novikov.novikovthetvdb.R;
 
 /**
@@ -16,7 +15,7 @@ public class SeriesViewHolder extends RecyclerView.ViewHolder {
     public final View mView;
     public final ImageView SeriesImageView;
     public final TextView SeriesNameTextView;
-    public final TextView SeriesOverviewTextView;
+    public final TextView firstAiredTextView;
     public Series mItem;
 
     public SeriesViewHolder(View view) {
@@ -24,6 +23,6 @@ public class SeriesViewHolder extends RecyclerView.ViewHolder {
         mView = view;
         SeriesImageView = (ImageView) view.findViewById(R.id.picture);
         SeriesNameTextView = (TextView) view.findViewById(R.id.seriesName);
-        SeriesOverviewTextView = (TextView) view.findViewById(R.id.overview);
+        firstAiredTextView = (TextView) view.findViewById(R.id.firstAired);
     }
 }

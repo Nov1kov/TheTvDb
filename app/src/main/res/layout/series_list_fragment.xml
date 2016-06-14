@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/show_list"
-    android:name="ru.novikov.novikovthetvdb.ShowListFragment"
+    android:id="@+id/frameLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:layoutManager="LinearLayoutManager"
-    tools:context=".SeriesListActivity"
-    tools:listitem="@layout/series_list_item" />
+    app:layout_behavior="@string/appbar_scrolling_view_behavior">
+    <include layout="@layout/main_lists_include_fragment" />
+</FrameLayout>

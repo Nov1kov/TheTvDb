@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v7.widget.SwitchCompat
+        android:id="@+id/listSwitchCompat"
+        android:padding="16dp"
+        android:singleLine="true"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <ViewSwitcher
+        android:id="@+id/listSwitcher"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/favorites_list"
+            android:name="ru.novikov.novikovthetvdb.ShowListFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layoutManager="LinearLayoutManager"
+            tools:context=".SeriesListActivity"
+            tools:listitem="@layout/series_list_item" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/series_list"
+            android:name="ru.novikov.novikovthetvdb.ShowListFragment"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:layoutManager="LinearLayoutManager"
+            tools:context=".SeriesListActivity"
+            tools:listitem="@layout/series_list_item" />
+
+    </ViewSwitcher>
+
+</LinearLayout>

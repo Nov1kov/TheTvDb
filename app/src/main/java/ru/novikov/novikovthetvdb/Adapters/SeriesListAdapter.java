@@ -69,7 +69,7 @@ public class SeriesListAdapter extends RecyclerView.Adapter<RecyclerView.ViewHol
             seriesViewHolder.mView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    itemListClickListener.OnShowClick(seriesViewHolder.mItem.id, v);
+                    itemListClickListener.OnSeriesClick(seriesViewHolder.mItem.id, v);
                 }
             });
         } else if (holder instanceof LoadingViewHolder) {

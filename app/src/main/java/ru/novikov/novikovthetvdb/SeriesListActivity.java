@@ -4,18 +4,22 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SwitchCompat;
 import android.support.v7.widget.Toolbar;
-import android.support.design.widget.FloatingActionButton;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.CompoundButton;
 import android.widget.Toast;
+import android.widget.ViewSwitcher;
 
 
+import ru.novikov.novikovthetvdb.Adapters.FavoritesListAdapter;
 import ru.novikov.novikovthetvdb.Adapters.ItemListClickListener;
 import ru.novikov.novikovthetvdb.Adapters.SeriesListAdapter;
 import ru.novikov.novikovthetvdb.Login.AuthOnGoogle;
@@ -35,14 +39,17 @@ import java.util.List;
  * item details. On tablets, the activity presents the list of items and
  * item details side-by-side using two vertical panes.
  */
-public class SeriesListActivity extends AppCompatActivity implements DataProviderSubscriber {
+public class SeriesListActivity extends AppCompatActivity
+                                implements DataProviderSubscriber,
+                                            CompoundButton.OnCheckedChangeListener,
+                                            ItemListClickListener {
 
-    /**
-     * Whether or not the activity is in two-pane mode, i.e. running on a tablet
-     * device.
-     */
+    private SwitchCompat listSwitchCompat;
+    private ViewSwitcher viewSwitcher;
+
     private boolean mTwoPane;
-    private SeriesListAdapter adapter;
+    private FavoritesListAdapter favoritesAdapter;
+    private SeriesListAdapter seriesAdapter;
 
     private AuthOnGoogle authOnGoogle;
 
@@ -54,54 +61,67 @@ public class SeriesListActivity extends AppCompatActivity implements DataProvide
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle(getTitle());
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                authOnGoogle.getGoogleToken();
-            }
-        });
+
+        viewSwitcher = (ViewSwitcher) findViewById(R.id.listSwitcher);
+
+        listSwitchCompat = (SwitchCompat) findViewById(R.id.listSwitchCompat);
+        onCheckedChanged(null, listSwitchCompat.isChecked());
+        listSwitchCompat.setOnCheckedChangeListener(this);
 
         authOnGoogle = new AuthOnGoogle(this);
+        authOnGoogle.getGoogleToken();
 
-        View recyclerView = findViewById(R.id.show_list);
-        assert recyclerView != null;
-        setupRecyclerView((RecyclerView) recyclerView);
+        View seriesRecyclerView = findViewById(R.id.series_list);
+        assert seriesRecyclerView != null;
+        setupSeriesRecyclerView((RecyclerView) seriesRecyclerView);
+        View favoritesRecyclerView = findViewById(R.id.favorites_list);
+        assert favoritesRecyclerView != null;
+        setupFavoritesRecyclerView((RecyclerView) favoritesRecyclerView);
 
         getApp().getDataProvider().setSubscriber(this);
         getApp().getDataProvider().getFullSeriesList(0);
 
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        assert fab != null;
         if (findViewById(R.id.show_detail_container) != null) {
-            // The detail container view will be present only in the
             // large-screen layouts (res/values-w900dp).
-            // If this view is present, then the
-            // activity should be in two-pane mode.
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                }
+            });
             mTwoPane = true;
+        }else{
+            fab.setVisibility(View.INVISIBLE);
         }
     }
 
-    private void setupRecyclerView(@NonNull RecyclerView recyclerView) {
-        adapter = new SeriesListAdapter(new ArrayList<Series>(),
-                new ItemListClickListener() {
-                    @Override
-                    public void OnShowClick(long id, View v) {
-                        if (mTwoPane) {
-                            Bundle arguments = new Bundle();
-                            arguments.putLong(SeriesDetailFragment.ARG_ITEM_ID, id);
-                            SeriesDetailFragment fragment = new SeriesDetailFragment();
-                            fragment.setArguments(arguments);
-                            getSupportFragmentManager().beginTransaction()
-                                    .replace(R.id.show_detail_container, fragment)
-                                    .commit();
-                        } else {
-                            Context context = v.getContext();
-                            Intent intent = new Intent(context, SeriesDetailActivity.class);
-                            intent.putExtra(SeriesDetailFragment.ARG_ITEM_ID, id);
-                            context.startActivity(intent);
-                        }
-                    }
-                });
+    private void setupFavoritesRecyclerView(@NonNull RecyclerView recyclerView) {
+        favoritesAdapter = new FavoritesListAdapter(getApp().getDataProvider().getFavoritesList(), this);
+        recyclerView.setAdapter(favoritesAdapter);
+    }
 
+    @Override
+    public void OnSeriesClick(long id, View v) {
+        if (mTwoPane) {
+            Bundle arguments = new Bundle();
+            arguments.putLong(SeriesDetailFragment.ARG_ITEM_ID, id);
+            SeriesDetailFragment fragment = new SeriesDetailFragment();
+            fragment.setArguments(arguments);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.show_detail_container, fragment)
+                    .commit();
+        } else {
+            Context context = v.getContext();
+            Intent intent = new Intent(context, SeriesDetailActivity.class);
+            intent.putExtra(SeriesDetailFragment.ARG_ITEM_ID, id);
+            context.startActivity(intent);
+        }
+    }
+
+    private void setupSeriesRecyclerView(@NonNull RecyclerView recyclerView) {
+        seriesAdapter = new SeriesListAdapter(new ArrayList<Series>(), this);
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -111,15 +131,15 @@ public class SeriesListActivity extends AppCompatActivity implements DataProvide
                 int totalItemCount = linearLayoutManager.getItemCount();
                 int lastVisibleItem = linearLayoutManager.findLastVisibleItemPosition();
 
-                if (adapter.needLoadedMore(totalItemCount, lastVisibleItem)){
-                    getApp().getDataProvider().getFullSeriesList(adapter.getItemCount());
-                    adapter.showProgressBar();
+                if (seriesAdapter.needLoadedMore(totalItemCount, lastVisibleItem)){
+                    getApp().getDataProvider().getFullSeriesList(seriesAdapter.getItemCount());
+                    seriesAdapter.showProgressBar();
                 }
             }
         });
         recyclerView.setLayoutManager(linearLayoutManager);
-        recyclerView.setAdapter(adapter);
-        adapter.showProgressBar();
+        recyclerView.setAdapter(seriesAdapter);
+        seriesAdapter.showProgressBar();
     }
 
     @Override
@@ -135,35 +155,15 @@ public class SeriesListActivity extends AppCompatActivity implements DataProvide
             case R.id.login:
                 authOnGoogle.getGoogleToken();
                 return true;
-            case R.id.favorites:
-                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        /*
-        if (requestCode == REQUEST_CODE_PICK_ACCOUNT) {
-            // Receiving a result from the AccountPicker
-            if (resultCode == RESULT_OK) {
-                mEmail = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
-                // With the account name acquired, go get the auth token
-                getUsername();
-            } else if (resultCode == RESULT_CANCELED) {
-                // The account picker dialog closed without selecting an account.
-                // Notify users that they must pick an account to proceed.
-                Toast.makeText(this, R.string.pick_account, Toast.LENGTH_SHORT).show();
-            }
-        }*/
-        super.onActivityResult(requestCode, resultCode, data);
-    }
-
-    @Override
     public void receivedSeriesList(List<Series> seriesDataList) {
-        adapter.setLoaded();
-        adapter.updateList(seriesDataList);
+        seriesAdapter.setLoaded();
+        seriesAdapter.updateList(seriesDataList);
     }
 
     @Override
@@ -183,7 +183,7 @@ public class SeriesListActivity extends AppCompatActivity implements DataProvide
 
     @Override
     public void receivedFail(String msg) {
-        adapter.setLoaded();
+        seriesAdapter.setLoaded();
         Toast.makeText(this, R.string.loading_fail, Toast.LENGTH_LONG).show();
     }
 
@@ -201,5 +201,15 @@ public class SeriesListActivity extends AppCompatActivity implements DataProvide
 
     public SeriesApp getApp() {
         return (SeriesApp) getApplication();
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        if (isChecked){
+            listSwitchCompat.setText(R.string.favorites_list);
+        }else {
+            listSwitchCompat.setText(R.string.series_list);
+        }
+        viewSwitcher.showNext();
     }
 }

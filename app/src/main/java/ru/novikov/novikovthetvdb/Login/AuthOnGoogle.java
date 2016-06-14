@@ -10,17 +10,26 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
-/**
- * Created by Ivan on 13.06.2016.
- */
+import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Series;
+import ru.novikov.novikovthetvdb.R;
+import ru.novikov.novikovthetvdb.SeriesApp;
+
 public class AuthOnGoogle {
 
-    private final String AUTH_TOKEN_TYPE = "oauth2:https://www.googleapis.com/auth/tasks";
-    private final String ACCOUNT_TYPE = "com.google";
-    private final String TAG = "AuthOnGoogle";
+    private static final String AUTH_TOKEN_TYPE = "oauth2:https://www.googleapis.com/auth/tasks";
+    private static final String ACCOUNT_TYPE = "com.google";
+    private static final String DUMMY_ACCOUNT_NAME = "UnknownAccount";
+    private static final String TAG = "AuthOnGoogle";
 
     private Activity activity;
+    private String googleToken = null;
+    private String accountName = null;
+
+    private SeriesApp getApp(){
+        return (SeriesApp) activity.getApplication();
+    }
 
     public AuthOnGoogle(Activity activity) {
         this.activity = activity;
@@ -38,11 +47,15 @@ public class AuthOnGoogle {
                     try {
                         // If the user has authorized your application to use the tasks API
                         // a token is available.
-                        String token = future.getResult().getString(AccountManager.KEY_AUTHTOKEN);
+                        googleToken = future.getResult().getString(AccountManager.KEY_AUTHTOKEN);
+                        accountName = future.getResult().getString(AccountManager.KEY_ACCOUNT_NAME);
+                        getApp().getDataProvider().updateGoogleName(accountName);
+
                         // Now you can use the Tasks API...
-                        Log.d(TAG, token);
+                        callBackMessage(activity.getString(R.string.google_authrized));
                     } catch (OperationCanceledException e) {
-                        // TODO: The user has denied you access to the API, you should handle that
+                        // The user has denied you access to the API
+                        callBackMessage(activity.getString(R.string.google_authrized_denied));
                     } catch (Exception e) {
                         //handleException(e);
                     }
@@ -51,18 +64,12 @@ public class AuthOnGoogle {
         }
 
         if (accounts.length == 0){
-
+            getApp().getDataProvider().updateGoogleName(DUMMY_ACCOUNT_NAME);
+            callBackMessage(activity.getString(R.string.google_acc_not_found));
         }
     }
 
-    /*
-    static final int REQUEST_CODE_PICK_ACCOUNT = 1000;
-
-    private void pickUserAccount() {
-        String[] accountTypes = new String[]{"com.google"};
-        Intent intent = AccountPicker.newChooseAccountIntent(null, null,
-                accountTypes, false, null, null, null, null);
-        startActivityForResult(intent, REQUEST_CODE_PICK_ACCOUNT);
+    private void callBackMessage(String message){
+        Toast.makeText(activity, message, Toast.LENGTH_LONG).show();
     }
-*/
 }

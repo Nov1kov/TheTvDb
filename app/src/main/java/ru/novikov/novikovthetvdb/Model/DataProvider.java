@@ -3,6 +3,8 @@ package ru.novikov.novikovthetvdb.Model;
 import java.util.ArrayList;
 import java.util.List;
 
+import ru.novikov.novikovthetvdb.Model.DataBase.DataBaseRepository;
+import ru.novikov.novikovthetvdb.Model.DataBase.GreenDao.FavoriteItem;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Actor;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Episode;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Series;
@@ -18,10 +20,13 @@ public class DataProvider implements RestRepository.SaverToken {
     private RestRepository remoteRepository;
     private PreferencesRepository preferencesRepository;
     private MemoryRepository memoryRepository;
+    private DataBaseRepository dataBaseRepository;
     private List<DataProviderSubscriber> subscribers;
 
-    public DataProvider(RestRepository repository, PreferencesRepository preferencesRepository){
+    public DataProvider(RestRepository repository, PreferencesRepository preferencesRepository, DataBaseRepository dataBaseRepository){
         this.remoteRepository = repository;
+        this.dataBaseRepository = dataBaseRepository;
+
         memoryRepository = new MemoryRepository();
         subscribers = new ArrayList<>();
         this.preferencesRepository = preferencesRepository;
@@ -87,9 +92,28 @@ public class DataProvider implements RestRepository.SaverToken {
         });
     }
 
+    /*
+    Принимает токен и сохраняет в sharedPref
+     */
     @Override
     public void onSaveToken(String token) {
         if (preferencesRepository != null)
             preferencesRepository.saveTvDbToken(token);
+    }
+
+    public void updateGoogleName(String name){
+        preferencesRepository.saveGoogleName(name);
+    }
+
+    public void saveFavoriteSeries(Series series){
+        FavoriteItem favoriteItem =  new FavoriteItem();
+        favoriteItem.setGenre(series.genre.toString());
+        favoriteItem.setOwner(preferencesRepository.getGoogleName());
+        favoriteItem.setSeriesName(series.seriesName);
+        dataBaseRepository.addFavoriteItem(favoriteItem);
+    }
+
+    public List<FavoriteItem> getFavoritesList() {
+        return dataBaseRepository.getAllFavoritesItems(preferencesRepository.getGoogleName());
     }
 }

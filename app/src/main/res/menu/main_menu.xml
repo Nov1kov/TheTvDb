@@ -4,7 +4,4 @@
     <item android:id="@+id/login"
         android:title="@string/google_login" />
 
-    <item android:id="@+id/favorites"
-        android:title="@string/favorites_series" />
-
 </menu>

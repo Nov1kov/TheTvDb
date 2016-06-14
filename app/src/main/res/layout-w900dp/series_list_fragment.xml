@@ -16,18 +16,13 @@
     master/detail flow.
     
     -->
-
-    <android.support.v7.widget.RecyclerView xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:id="@+id/show_list"
-        android:name="ru.novikov.novikovthetvdb.ShowListFragment"
+    <FrameLayout
+        android:id="@+id/frameLayout"
         android:layout_width="@dimen/item_width"
         android:layout_height="match_parent"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        app:layoutManager="LinearLayoutManager"
-        tools:context=".SeriesListActivity"
-        tools:listitem="@layout/series_list_item" />
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+        <include layout="@layout/main_lists_include_fragment" />
+    </FrameLayout>
 
     <FrameLayout
         android:id="@+id/show_detail_container"

@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 
 import java.util.List;
 
-import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Actor;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Episode;
 import ru.novikov.novikovthetvdb.R;
 
@@ -52,7 +51,7 @@ public class EpisodesListAdapter extends RecyclerView.Adapter<EpisodeViewHolder>
             @Override
             public void onClick(View v) {
                 if (itemListClickListener != null)
-                    itemListClickListener.OnShowClick(holder.item.id, v);
+                    itemListClickListener.OnSeriesClick(holder.item.id, v);
             }
         });
     }

@@ -9,6 +9,7 @@ public class PreferencesRepository {
 
     private static final String PREFERENCES_NAME = "NovikovTvDbPref";
     private static final String KEY_TVDB_TOKEN = "TvDbToken";
+    private static final String KEY_LAST_AUTH_NAME = "GoogleName";
     private static final String TAG = "PreferencesRepository";
 
     private SharedPreferences sPref;
@@ -35,6 +36,18 @@ public class PreferencesRepository {
     public String getKeyTvdbToken(){
         SharedPreferences sPref = getSharedPreferences();
         return sPref.getString(KEY_TVDB_TOKEN, null);
+    }
+
+    public void saveGoogleName(String name){
+        SharedPreferences sPref = getSharedPreferences();
+        SharedPreferences.Editor ed = sPref.edit();
+        ed.putString(KEY_LAST_AUTH_NAME, name);
+        ed.apply();
+    }
+
+    public String getGoogleName(){
+        SharedPreferences sPref = getSharedPreferences();
+        return sPref.getString(KEY_LAST_AUTH_NAME, null);
     }
 
 }

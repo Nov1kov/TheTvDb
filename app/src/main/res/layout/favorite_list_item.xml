@@ -9,6 +9,7 @@
 
     <ImageView
         android:id="@+id/picture"
+        android:src="@android:drawable/star_big_on"
         android:layout_width="@dimen/list_image_size"
         android:layout_height="@dimen/list_image_size" />
 
@@ -26,7 +27,7 @@
         android:textAppearance="?attr/textAppearanceListItem" />
 
     <TextView
-        android:id="@+id/firstAired"
+        android:id="@+id/seriesGenre"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?attr/textAppearanceListItemSmall" />

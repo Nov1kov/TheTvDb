@@ -8,24 +8,24 @@ import android.view.ViewGroup;
 
 import java.util.List;
 
-import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Actor;
+import ru.novikov.novikovthetvdb.Model.DataBase.GreenDao.FavoriteItem;
 import ru.novikov.novikovthetvdb.R;
 
 
 /**
- * adapter for tv shows list
+ * adapter for favorites series
  */
-public class ActorsListAdapter extends RecyclerView.Adapter<ActorViewHolder> {
+public class FavoritesListAdapter extends RecyclerView.Adapter<FavoriteViewHolder> {
 
-    private List<Actor> mValues;
+    private List<FavoriteItem> mValues;
     private ItemListClickListener itemListClickListener;
 
-    public ActorsListAdapter(List<Actor> items, @Nullable ItemListClickListener listener) {
+    public FavoritesListAdapter(List<FavoriteItem> items, @Nullable ItemListClickListener listener) {
         mValues = items;
         itemListClickListener = listener;
     }
 
-    public void updateList(List<Actor> items){
+    public void updateList(List<FavoriteItem> items){
         if (items != null){
             mValues.addAll(items);
             notifyDataSetChanged();
@@ -33,23 +33,23 @@ public class ActorsListAdapter extends RecyclerView.Adapter<ActorViewHolder> {
     }
 
     @Override
-    public ActorViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+    public FavoriteViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.actor_list_item, parent, false);
-        return new ActorViewHolder(view);
+                .inflate(R.layout.favorite_list_item, parent, false);
+        return new FavoriteViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(final ActorViewHolder holder, int position) {
-        Actor item = mValues.get(position);
-        holder.item = item;
-        holder.ActorNameTextView.setText(item.name);
-        holder.ActorRoleTextView.setText(item.role);
+    public void onBindViewHolder(final FavoriteViewHolder holder, int position) {
+        FavoriteItem item = mValues.get(position);
+        holder.mItem = item;
+        holder.SeriesNameTextView.setText(item.getSeriesName());
+        holder.SeriesGenreTextView.setText(item.getGenre());
         holder.mView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if (itemListClickListener != null)
-                    itemListClickListener.OnSeriesClick(holder.item.id, v);
+                    itemListClickListener.OnSeriesClick(holder.mItem.getSeriesId(), v);
             }
         });
     }

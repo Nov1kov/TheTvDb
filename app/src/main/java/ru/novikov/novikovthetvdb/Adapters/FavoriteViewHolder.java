@@ -2,11 +2,9 @@ package ru.novikov.novikovthetvdb.Adapters;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import ru.novikov.novikovthetvdb.Model.DataBase.GreenDao.FavoriteItem;
-import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Series;
 import ru.novikov.novikovthetvdb.R;
 
 /**

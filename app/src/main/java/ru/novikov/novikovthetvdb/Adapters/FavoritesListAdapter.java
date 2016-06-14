@@ -27,7 +27,7 @@ public class FavoritesListAdapter extends RecyclerView.Adapter<FavoriteViewHolde
 
     public void updateList(List<FavoriteItem> items){
         if (items != null){
-            mValues.addAll(items);
+            mValues = items;
             notifyDataSetChanged();
         }
     }

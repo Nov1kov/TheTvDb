@@ -23,7 +23,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layoutManager="LinearLayoutManager"
-            tools:context=".SeriesListActivity"
+            tools:context=".View.SeriesListActivity"
             tools:listitem="@layout/series_list_item" />
 
         <android.support.v7.widget.RecyclerView
@@ -32,7 +32,7 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             app:layoutManager="LinearLayoutManager"
-            tools:context=".SeriesListActivity"
+            tools:context=".View.SeriesListActivity"
             tools:listitem="@layout/series_list_item" />
 
     </ViewSwitcher>

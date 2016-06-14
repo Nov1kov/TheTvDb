@@ -1,4 +1,4 @@
-package ru.novikov.novikovthetvdb.Model;
+package ru.novikov.novikovthetvdb.Model.Rest;
 
 import android.util.Log;
 
@@ -26,6 +26,7 @@ public class RestRepository {
 
     private static final String TVDB_APIKEY = "3349F1D32F314DE9";
     private static final String TAG = "RestRepository";
+    private static final int TIME_NEW_SERIES_AWAY = 50000; //ToDo взято на обум чтобы выдавало 250-300 элементов
 
     private ApiClient client;
     private SaverToken saverInfo;
@@ -98,14 +99,14 @@ public class RestRepository {
         final ArrayList<Series> series = new ArrayList<>();
         getSeriesLastWeek(new ResponseSuccessful<List<SeriesData>>() {
             @Override
-            public void response(final List<SeriesData> seriesDatas) {
-                for (int i = from; (i < from + seriesCount) && (i < seriesDatas.size()); i++) {
+            public void response(final List<SeriesData> seriesDates) {
+                for (int i = from; (i < from + seriesCount) && (i < seriesDates.size()); i++) {
 
-                    client.GetSeriesInfo(seriesDatas.get(i).id, new ResponseSuccessful<SeriesResponse>() {
+                    client.GetSeriesInfo(seriesDates.get(i).id, new ResponseSuccessful<SeriesResponse>() {
                         @Override
                         public void response(SeriesResponse body) {
                             series.add(body.data);
-                            if ((series.size() == seriesCount) || (series.size() == seriesDatas.size())){
+                            if ((series.size() == seriesCount) || (series.size() == seriesDates.size())){
                                 callback.response(series);
                             }
                         }
@@ -113,7 +114,7 @@ public class RestRepository {
                         @Override
                         public void onFail(String message) {
                             series.add(new Series());
-                            if ((series.size() == seriesCount) || (series.size() == seriesDatas.size())){
+                            if ((series.size() == seriesCount) || (series.size() == seriesDates.size())){
                                 callback.response(series);
                             }
                         }
@@ -129,7 +130,7 @@ public class RestRepository {
             @Override
             public void loginSuccessfully() {
                 int fromTime = (int) (System.currentTimeMillis() / 1000);
-                int toTime = (int) (System.currentTimeMillis() / 1000) - 50000; //
+                int toTime = (int) (System.currentTimeMillis() / 1000) - TIME_NEW_SERIES_AWAY; //
                 client.GetSeriesRecent(String.valueOf(toTime), null, new ResponseSuccessful<SeriesRecentResponse>() {
                     @Override
                     public void response(SeriesRecentResponse body) {

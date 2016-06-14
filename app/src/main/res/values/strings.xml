@@ -1,18 +1,17 @@
 <resources>
     <string name="app_name">NovikovTheTvDb</string>
-    <string name="title_show_detail">Show Detail</string>
-    <string name="failConnection">fail with connection</string>
+    <string name="title_show_detail">Series Detail</string>
+    <string name="failConnection">connection fail</string>
     <string name="loading_fail">Loading last series fail</string>
     <string name="empty_overview">overview is empty</string>
     <string name="actors">actors</string>
     <string name="episodes">Episodes</string>
     <string name="number_of_episode" formatted="false">season: %s episode: %s</string>
     <string name="google_login">google login</string>
-    <string name="favorites_series">favorites series</string>
-    <string name="pick_account">account picked</string>
     <string name="google_authrized">successfully had authorized</string>
     <string name="google_authrized_denied">you denied authorized</string>
     <string name="google_acc_not_found">not found google accounts on this device</string>
-    <string name="favorites_list">Favorites List</string>
+    <string name="favorites_list">Favorites series list</string>
     <string name="series_list">Series list</string>
+    <string name="favorite_added">Favorite series %s was added</string>
 </resources>

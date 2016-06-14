@@ -1,4 +1,4 @@
-package ru.novikov.novikovthetvdb;
+package ru.novikov.novikovthetvdb.View;
 
 import android.app.Activity;
 import android.support.design.widget.CollapsingToolbarLayout;
@@ -10,8 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
-
-import org.w3c.dom.Text;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,6 +21,8 @@ import ru.novikov.novikovthetvdb.Model.DataProviderSubscriber;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Actor;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Episode;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Series;
+import ru.novikov.novikovthetvdb.R;
+import ru.novikov.novikovthetvdb.SeriesApp;
 
 /**
  * A fragment representing a single Show detail screen.
@@ -47,19 +48,6 @@ public class SeriesDetailFragment extends Fragment implements DataProviderSubscr
     public SeriesDetailFragment() {
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        if (getArguments().containsKey(ARG_ITEM_ID)) {
-            // Load the dummy content specified by the fragment
-            // arguments. In a real-world scenario, use a Loader
-            // to load content from a content provider.
-            getApp().getDataProvider().setSubscriber(this);
-            getApp().getDataProvider().getSeriesDetail(getArguments().getLong(ARG_ITEM_ID, 0));
-        }
-    }
-
     private SeriesApp getApp(){
         return (SeriesApp) getActivity().getApplication();
     }
@@ -82,8 +70,20 @@ public class SeriesDetailFragment extends Fragment implements DataProviderSubscr
         episodesRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
         getApp().getDataProvider().setSubscriber(this);
+        if (getArguments().containsKey(ARG_ITEM_ID))
+            getApp().getDataProvider().getSeriesDetail(getArguments().getLong(ARG_ITEM_ID, 0));
 
         return rootView;
+    }
+
+    /*
+    method from activtiy
+     */
+    public void addToFavoriteButtonClick(){
+        getApp().getDataProvider().saveFavoriteSeries(currentSeries);
+        Toast.makeText(getContext(),
+                String.format(getContext().getString(R.string.favorite_added), currentSeries.seriesName),
+                Toast.LENGTH_LONG).show();
     }
 
     @Override
@@ -130,6 +130,6 @@ public class SeriesDetailFragment extends Fragment implements DataProviderSubscr
 
     @Override
     public void receivedFail(String msg) {
-
+        Toast.makeText(getContext(), R.string.failConnection, Toast.LENGTH_LONG).show();
     }
 }

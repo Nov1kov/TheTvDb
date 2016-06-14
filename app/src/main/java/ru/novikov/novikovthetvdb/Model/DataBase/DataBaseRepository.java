@@ -3,6 +3,7 @@ package ru.novikov.novikovthetvdb.Model.DataBase;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import ru.novikov.novikovthetvdb.Model.DataBase.GreenDao.DaoMaster;
@@ -28,9 +29,12 @@ public class DataBaseRepository {
     }
 
     public List<FavoriteItem> getAllFavoritesItems(String owner){
-        return daoSession.queryBuilder(FavoriteItem.class)
-                .where(FavoriteItemDao.Properties.Owner.eq(owner))
-                .list();
+        if (owner != null){
+            return daoSession.queryBuilder(FavoriteItem.class)
+                    .where(FavoriteItemDao.Properties.Owner.eq(owner))
+                    .list();
+        }
+            return new ArrayList<>();
     }
 
     public void addFavoriteItem(FavoriteItem favoriteItem){

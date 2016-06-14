@@ -9,6 +9,8 @@ import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Actor;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Episode;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Series;
 import ru.novikov.novikovthetvdb.Model.Rest.ResponseSuccessful;
+import ru.novikov.novikovthetvdb.Model.Rest.RestRepository;
+import ru.novikov.novikovthetvdb.Model.SharedPreferences.PreferencesRepository;
 
 /**
  *
@@ -18,16 +20,15 @@ public class DataProvider implements RestRepository.SaverToken {
     public final static int SERIES_PORTION_COUNT = 20;
 
     private RestRepository remoteRepository;
+
     private PreferencesRepository preferencesRepository;
-    private MemoryRepository memoryRepository;
     private DataBaseRepository dataBaseRepository;
+
     private List<DataProviderSubscriber> subscribers;
 
     public DataProvider(RestRepository repository, PreferencesRepository preferencesRepository, DataBaseRepository dataBaseRepository){
         this.remoteRepository = repository;
         this.dataBaseRepository = dataBaseRepository;
-
-        memoryRepository = new MemoryRepository();
         subscribers = new ArrayList<>();
         this.preferencesRepository = preferencesRepository;
         remoteRepository.setAuthToken(preferencesRepository.getKeyTvdbToken());
@@ -44,22 +45,14 @@ public class DataProvider implements RestRepository.SaverToken {
     }
 
     public void getSeriesDetail(final long seriesId){
-        Series memObj = memoryRepository.getSeriesDetail(seriesId);
-        if (memObj == null){
-            remoteRepository.getSeries(seriesId, new ResponseSuccessful<Series>() {
-                @Override
-                public void response(Series body) {
-                    memoryRepository.setSeries(body);
-                    for (DataProviderSubscriber subscriber : subscribers){
-                        subscriber.receivedSeries(body);
-                    }
+        remoteRepository.getSeries(seriesId, new ResponseSuccessful<Series>() {
+            @Override
+            public void response(Series body) {
+                for (DataProviderSubscriber subscriber : subscribers){
+                    subscriber.receivedSeries(body);
                 }
-            });
-        } else {
-            for (DataProviderSubscriber subscriber : subscribers)
-                subscriber.receivedSeries(memObj);
-        }
-
+            }
+        });
     }
 
     public void getFullSeriesList(int from){
@@ -106,7 +99,9 @@ public class DataProvider implements RestRepository.SaverToken {
     }
 
     public void saveFavoriteSeries(Series series){
+        //TODO move to adapter dataProvider -> adapter -> dataBaseRepository
         FavoriteItem favoriteItem =  new FavoriteItem();
+        favoriteItem.setSeriesId(series.id);
         favoriteItem.setGenre(series.genre.toString());
         favoriteItem.setOwner(preferencesRepository.getGoogleName());
         favoriteItem.setSeriesName(series.seriesName);

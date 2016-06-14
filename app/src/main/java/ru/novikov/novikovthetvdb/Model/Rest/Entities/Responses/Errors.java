@@ -5,8 +5,8 @@ import java.util.List;
 
 public class Errors {
 
-    public List<String> invalidFilters = new ArrayList<String>();
+    public List<String> invalidFilters = new ArrayList<>();
     public String invalidLanguage;
-    public List<String> invalidQueryParams = new ArrayList<String>();
+    public List<String> invalidQueryParams = new ArrayList<>();
 
 }

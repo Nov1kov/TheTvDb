@@ -6,13 +6,10 @@ import android.accounts.AccountManagerCallback;
 import android.accounts.AccountManagerFuture;
 import android.accounts.OperationCanceledException;
 import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
 
-import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Series;
 import ru.novikov.novikovthetvdb.R;
 import ru.novikov.novikovthetvdb.SeriesApp;
 

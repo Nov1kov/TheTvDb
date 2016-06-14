@@ -1,10 +1,12 @@
-package ru.novikov.novikovthetvdb.Model;
+package ru.novikov.novikovthetvdb.Model.SharedPreferences;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.Log;
 
-
+/*
+    save settings in data app
+ */
 public class PreferencesRepository {
 
     private static final String PREFERENCES_NAME = "NovikovTvDbPref";

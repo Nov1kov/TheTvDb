@@ -4,7 +4,7 @@
     android:layout_height="fill_parent"
     android:layout_width="fill_parent"
     android:weightSum="2"
-    tools:context=".SeriesDetailFragment"
+    tools:context=".View.SeriesDetailFragment"
     android:orientation="horizontal"
     android:baselineAligned="false">
 

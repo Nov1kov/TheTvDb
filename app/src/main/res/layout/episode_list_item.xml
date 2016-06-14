@@ -25,15 +25,13 @@
         android:id="@+id/episodeName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?attr/textAppearanceListItem"
-        android:text="Заголовок"/>
+        android:textAppearance="?attr/textAppearanceListItem" />
 
     <TextView
         android:id="@+id/episodeNumber"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?attr/textAppearanceListItemSmall"
-        android:text="Описание"/>
+        android:textAppearance="?attr/textAppearanceListItemSmall" />
 
     </LinearLayout>
 

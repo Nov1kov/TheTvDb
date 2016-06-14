@@ -4,8 +4,8 @@ import android.app.Application;
 
 import ru.novikov.novikovthetvdb.Model.DataBase.DataBaseRepository;
 import ru.novikov.novikovthetvdb.Model.DataProvider;
-import ru.novikov.novikovthetvdb.Model.PreferencesRepository;
-import ru.novikov.novikovthetvdb.Model.RestRepository;
+import ru.novikov.novikovthetvdb.Model.SharedPreferences.PreferencesRepository;
+import ru.novikov.novikovthetvdb.Model.Rest.RestRepository;
 
 public class SeriesApp extends Application {
 
@@ -15,7 +15,7 @@ public class SeriesApp extends Application {
     public void onCreate() {
         super.onCreate();
         PreferencesRepository preferencesRepository = new PreferencesRepository(getBaseContext());
-        DataBaseRepository dataBaseRepository = new DataBaseRepository(getApplicationContext());
+        DataBaseRepository dataBaseRepository = new DataBaseRepository(getBaseContext());
         RestRepository repository = new RestRepository();
         dataProvider = new DataProvider(repository, preferencesRepository, dataBaseRepository);
     }

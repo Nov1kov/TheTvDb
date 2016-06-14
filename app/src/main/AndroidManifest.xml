@@ -4,6 +4,8 @@
     package="ru.novikov.novikovthetvdb">
 
     <uses-permission android:name="android.permission.USE_CREDENTIALS" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <application
         android:name=".SeriesApp"
         android:allowBackup="true"
@@ -13,8 +15,9 @@
         android:theme="@style/AppTheme"
         tools:ignore="AllowBackup,GoogleAppIndexingWarning">
         <activity
-            android:name=".SeriesListActivity"
+            android:name=".View.SeriesListActivity"
             android:label="@string/app_name"
+            android:launchMode="singleTop"
             android:theme="@style/AppTheme.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -23,17 +26,14 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".SeriesDetailActivity"
+            android:name=".View.SeriesDetailActivity"
             android:label="@string/title_show_detail"
-            android:parentActivityName=".SeriesListActivity"
+            android:parentActivityName=".View.SeriesListActivity"
             android:theme="@style/AppTheme.NoActionBar">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".SeriesListActivity" />
+                android:value=".View.SeriesListActivity" />
         </activity>
     </application>
-
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.GET_ACCOUNTS" />
 
 </manifest>

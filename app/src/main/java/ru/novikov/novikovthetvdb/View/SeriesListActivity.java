@@ -1,10 +1,11 @@
-package ru.novikov.novikovthetvdb;
+package ru.novikov.novikovthetvdb.View;
 
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,16 +24,19 @@ import ru.novikov.novikovthetvdb.Adapters.FavoritesListAdapter;
 import ru.novikov.novikovthetvdb.Adapters.ItemListClickListener;
 import ru.novikov.novikovthetvdb.Adapters.SeriesListAdapter;
 import ru.novikov.novikovthetvdb.Login.AuthOnGoogle;
+import ru.novikov.novikovthetvdb.Model.DataBase.GreenDao.FavoriteItem;
 import ru.novikov.novikovthetvdb.Model.DataProviderSubscriber;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Actor;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Episode;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Series;
+import ru.novikov.novikovthetvdb.R;
+import ru.novikov.novikovthetvdb.SeriesApp;
 
 import java.util.ArrayList;
 import java.util.List;
 
 /**
- * An activity representing a list of Shows. This activity
+ * An activity representing a list of Series. This activity
  * has different presentations for handset and tablet-size devices. On
  * handsets, the activity presents a list of items, which when touched,
  * lead to a {@link SeriesDetailActivity} representing
@@ -48,6 +52,7 @@ public class SeriesListActivity extends AppCompatActivity
     private ViewSwitcher viewSwitcher;
 
     private boolean mTwoPane;
+    private long currentSeriesId;
     private FavoritesListAdapter favoritesAdapter;
     private SeriesListAdapter seriesAdapter;
 
@@ -69,13 +74,12 @@ public class SeriesListActivity extends AppCompatActivity
         listSwitchCompat.setOnCheckedChangeListener(this);
 
         authOnGoogle = new AuthOnGoogle(this);
-        authOnGoogle.getGoogleToken();
+        if (savedInstanceState == null)
+            authOnGoogle.getGoogleToken();
 
         View seriesRecyclerView = findViewById(R.id.series_list);
-        assert seriesRecyclerView != null;
         setupSeriesRecyclerView((RecyclerView) seriesRecyclerView);
         View favoritesRecyclerView = findViewById(R.id.favorites_list);
-        assert favoritesRecyclerView != null;
         setupFavoritesRecyclerView((RecyclerView) favoritesRecyclerView);
 
         getApp().getDataProvider().setSubscriber(this);
@@ -88,36 +92,30 @@ public class SeriesListActivity extends AppCompatActivity
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
+                    SeriesDetailFragment fragment =
+                            (SeriesDetailFragment) getSupportFragmentManager().findFragmentById(R.id.show_detail_container);
+                    if (fragment != null)
+                        fragment.addToFavoriteButtonClick();
                 }
             });
             mTwoPane = true;
         }else{
             fab.setVisibility(View.INVISIBLE);
+            Fragment fragment = getSupportFragmentManager().findFragmentById(R.id.show_detail_container);
+            if (fragment != null)
+                fragment.onDestroy();
         }
-    }
-
-    private void setupFavoritesRecyclerView(@NonNull RecyclerView recyclerView) {
-        favoritesAdapter = new FavoritesListAdapter(getApp().getDataProvider().getFavoritesList(), this);
-        recyclerView.setAdapter(favoritesAdapter);
     }
 
     @Override
-    public void OnSeriesClick(long id, View v) {
-        if (mTwoPane) {
-            Bundle arguments = new Bundle();
-            arguments.putLong(SeriesDetailFragment.ARG_ITEM_ID, id);
-            SeriesDetailFragment fragment = new SeriesDetailFragment();
-            fragment.setArguments(arguments);
-            getSupportFragmentManager().beginTransaction()
-                    .replace(R.id.show_detail_container, fragment)
-                    .commit();
-        } else {
-            Context context = v.getContext();
-            Intent intent = new Intent(context, SeriesDetailActivity.class);
-            intent.putExtra(SeriesDetailFragment.ARG_ITEM_ID, id);
-            context.startActivity(intent);
-        }
+    protected void onStart() {
+        favoritesAdapter.updateList(getApp().getDataProvider().getFavoritesList());
+        super.onStart();
+    }
+
+    private void setupFavoritesRecyclerView(@NonNull RecyclerView recyclerView) {
+        favoritesAdapter = new FavoritesListAdapter(new ArrayList<FavoriteItem>(), this);
+        recyclerView.setAdapter(favoritesAdapter);
     }
 
     private void setupSeriesRecyclerView(@NonNull RecyclerView recyclerView) {
@@ -140,6 +138,27 @@ public class SeriesListActivity extends AppCompatActivity
         recyclerView.setLayoutManager(linearLayoutManager);
         recyclerView.setAdapter(seriesAdapter);
         seriesAdapter.showProgressBar();
+    }
+
+    /*
+    method calls from both recyclerViews favorites and series lists
+     */
+    @Override
+    public void OnSeriesClick(long id, View v) {
+        if (mTwoPane) {
+            Bundle arguments = new Bundle();
+            arguments.putLong(SeriesDetailFragment.ARG_ITEM_ID, id);
+            SeriesDetailFragment fragment = new SeriesDetailFragment();
+            fragment.setArguments(arguments);
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.show_detail_container, fragment)
+                    .commit();
+        } else {
+            Context context = v.getContext();
+            Intent intent = new Intent(context, SeriesDetailActivity.class);
+            intent.putExtra(SeriesDetailFragment.ARG_ITEM_ID, id);
+            context.startActivity(intent);
+        }
     }
 
     @Override
@@ -191,12 +210,6 @@ public class SeriesListActivity extends AppCompatActivity
     protected void onDestroy() {
         getApp().getDataProvider().deleteSubscriber(this);
         super.onDestroy();
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        getApp().getDataProvider().setSubscriber(this);
     }
 
     public SeriesApp getApp() {

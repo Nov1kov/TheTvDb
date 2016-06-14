@@ -1,7 +1,6 @@
 package ru.novikov.novikovthetvdb.Model.Rest;
 
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import java.io.IOException;
 
@@ -14,7 +13,6 @@ import retrofit2.Callback;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Actors;
-import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Episode;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Episodes;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.SeriesResponse;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.SeriesRecentResponse;

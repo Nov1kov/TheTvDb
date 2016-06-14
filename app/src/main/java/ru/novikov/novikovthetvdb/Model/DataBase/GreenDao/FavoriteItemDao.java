@@ -28,7 +28,7 @@ public class FavoriteItemDao extends AbstractDao<FavoriteItem, Long> {
         public final static Property SeriesId = new Property(2, Long.class, "seriesId", false, "SERIES_ID");
         public final static Property SeriesName = new Property(3, String.class, "seriesName", false, "SERIES_NAME");
         public final static Property Genre = new Property(4, String.class, "genre", false, "GENRE");
-    };
+    }
 
 
     public FavoriteItemDao(DaoConfig config) {

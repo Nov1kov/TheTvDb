@@ -2,7 +2,8 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical" android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
     android:layout_height="match_parent">
 
     <android.support.v7.widget.SwitchCompat
@@ -14,6 +15,8 @@
 
     <ViewSwitcher
         android:id="@+id/listSwitcher"
+        android:inAnimation="@android:anim/slide_in_left"
+        android:outAnimation="@android:anim/slide_out_right"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -24,7 +27,7 @@
             android:layout_height="match_parent"
             app:layoutManager="LinearLayoutManager"
             tools:context=".View.SeriesListActivity"
-            tools:listitem="@layout/series_list_item" />
+            tools:listitem="@layout/favorite_list_item" />
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/series_list"

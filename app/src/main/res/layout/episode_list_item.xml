@@ -23,12 +23,16 @@
 
     <TextView
         android:id="@+id/episodeName"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?attr/textAppearanceListItem" />
 
     <TextView
         android:id="@+id/episodeNumber"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?attr/textAppearanceListItemSmall" />

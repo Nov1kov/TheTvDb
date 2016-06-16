@@ -1,36 +1,39 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:gravity="center_vertical"
-    android:layout_height="@dimen/list_height"
-    android:orientation="horizontal"
-    android:layout_margin="@dimen/text_margin">
+    android:layout_height="@dimen/list_height">
 
 
     <ImageView
         android:id="@+id/picture"
-        android:layout_width="@dimen/list_image_size"
-        android:layout_height="@dimen/list_image_size" />
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/list_height" />
 
     <LinearLayout
+        android:background="@drawable/item_background"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:gravity="center_vertical"
         android:orientation="vertical"
-        android:layout_marginStart="@dimen/text_margin">
+        android:padding="@dimen/text_margin">
 
     <TextView
         android:id="@+id/seriesName"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?attr/textAppearanceListItem" />
 
     <TextView
         android:id="@+id/firstAired"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?attr/textAppearanceListItemSmall" />
 
     </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>

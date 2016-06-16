@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">NovikovTheTvDb</string>
+    <string name="app_name">Series catalog</string>
     <string name="title_show_detail">Series Detail</string>
     <string name="failConnection">connection fail</string>
     <string name="loading_fail">Loading last series fail</string>

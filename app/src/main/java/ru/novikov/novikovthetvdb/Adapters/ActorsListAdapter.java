@@ -6,8 +6,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.squareup.picasso.Picasso;
+
 import java.util.List;
 
+import ru.novikov.novikovthetvdb.Model.Rest.ApiClient;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Actor;
 import ru.novikov.novikovthetvdb.R;
 
@@ -20,9 +23,16 @@ public class ActorsListAdapter extends RecyclerView.Adapter<ActorViewHolder> {
     private List<Actor> mValues;
     private ItemListClickListener itemListClickListener;
 
+    private Picasso picasso;
+
     public ActorsListAdapter(List<Actor> items, @Nullable ItemListClickListener listener) {
         mValues = items;
         itemListClickListener = listener;
+    }
+
+    public void setPicasso(Picasso picasso){
+        this.picasso = picasso;
+        picasso.setLoggingEnabled(true);
     }
 
     public void updateList(List<Actor> items){
@@ -52,6 +62,13 @@ public class ActorsListAdapter extends RecyclerView.Adapter<ActorViewHolder> {
                     itemListClickListener.OnSeriesClick(holder.item.id, v);
             }
         });
+
+        if (picasso != null)
+            picasso.
+                load(ApiClient.TVDB_IMAGES_URL + item.image).
+                fit().
+                centerCrop().
+                into(holder.ActorImageView);
     }
 
     @Override

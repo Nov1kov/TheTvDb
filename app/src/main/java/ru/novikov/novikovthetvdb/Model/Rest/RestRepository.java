@@ -5,18 +5,14 @@ import android.util.Log;
 import java.util.ArrayList;
 import java.util.List;
 
-import ru.novikov.novikovthetvdb.Model.Rest.AfterLogin;
-import ru.novikov.novikovthetvdb.Model.Rest.ApiClient;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Actor;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Actors;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Episode;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Episodes;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Series;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.SeriesData;
-import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.SeriesResponse;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.SeriesRecentResponse;
-import ru.novikov.novikovthetvdb.Model.Rest.ResponseFail;
-import ru.novikov.novikovthetvdb.Model.Rest.ResponseSuccessful;
+import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.SeriesResponse;
 
 /*
     remote repository with auto login
@@ -30,9 +26,14 @@ public class RestRepository {
 
     private ApiClient client;
     private SaverToken saverInfo;
+    private ResponseFail responseFail;
 
     public RestRepository(){
         client = new ApiClient("", "", TVDB_APIKEY);
+    }
+
+    public void setFailListener(ResponseFail responseFail){
+        this.responseFail = responseFail;
     }
 
     public void setSaverInfoListener(SaverToken saverInfo){
@@ -51,7 +52,7 @@ public class RestRepository {
             public void response(Episodes body) {
                 callback.response(body.data);
             }
-        }, null);
+        }, responseFail);
     }
 
     private boolean CheckAuth(final AfterLogin afterLogin){
@@ -78,7 +79,7 @@ public class RestRepository {
             public void response(Actors body) {
                 callback.response(body.data);
             }
-        }, null);
+        }, responseFail);
     }
 
     public void getSeries(final long seriesId, final ResponseSuccessful<Series> callback){
@@ -90,12 +91,13 @@ public class RestRepository {
                     public void response(SeriesResponse body) {
                         callback.response(body.data);
                     }
-                }, null);
+                }, responseFail);
             }
         });
     }
 
-    public void getLastSeriesList(final int from, final int seriesCount, final ResponseSuccessful<List<Series>> callback){
+    public void getLastSeriesList(final int from, final int seriesCount,
+                                  final ResponseSuccessful<List<Series>> callback){
         final ArrayList<Series> series = new ArrayList<>();
         getSeriesLastWeek(new ResponseSuccessful<List<SeriesData>>() {
             @Override
@@ -124,7 +126,7 @@ public class RestRepository {
         });
     }
 
-    public void getSeriesLastWeek(final ResponseSuccessful<List<SeriesData>> callback) {
+    private void getSeriesLastWeek(final ResponseSuccessful<List<SeriesData>> callback) {
 
         CheckAuth(new AfterLogin() {
             @Override
@@ -136,7 +138,7 @@ public class RestRepository {
                     public void response(SeriesRecentResponse body) {
                         callback.response(body.data);
                     }
-                }, null);
+                }, responseFail);
             }
         });
     }

@@ -9,8 +9,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +21,7 @@ import java.util.List;
 import ru.novikov.novikovthetvdb.Adapters.ActorsListAdapter;
 import ru.novikov.novikovthetvdb.Adapters.EpisodesListAdapter;
 import ru.novikov.novikovthetvdb.Model.DataProviderSubscriber;
+import ru.novikov.novikovthetvdb.Model.Rest.ApiClient;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Actor;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Episode;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Series;
@@ -40,6 +44,7 @@ public class SeriesDetailFragment extends Fragment implements DataProviderSubscr
     private Series currentSeries;
     private ActorsListAdapter actorsListAdapter;
     private EpisodesListAdapter episodesListAdapter;
+    private View progressActors, progressEpisodes;
 
     private TextView overviewTextView;
     private RecyclerView actorsRecyclerView;
@@ -57,10 +62,14 @@ public class SeriesDetailFragment extends Fragment implements DataProviderSubscr
                              Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.series_detail_fragment, container, false);
 
+        progressActors = rootView.findViewById(R.id.progressBar_actors);
+        progressEpisodes = rootView.findViewById(R.id.progressBar_episodes);
+
         overviewTextView = (TextView) rootView.findViewById(R.id.overview);
 
         actorsRecyclerView = (RecyclerView) rootView.findViewById(R.id.actorsRecyclerView);
         actorsListAdapter = new ActorsListAdapter(new ArrayList<Actor>(), null);
+        actorsListAdapter.setPicasso(new Picasso.Builder(getContext()).build());
         actorsRecyclerView.setAdapter(actorsListAdapter);
         actorsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
@@ -105,6 +114,16 @@ public class SeriesDetailFragment extends Fragment implements DataProviderSubscr
         if (appBarLayout != null) {
             appBarLayout.setTitle(currentSeries.seriesName);
         }
+
+        ImageView backdrop = (ImageView) activity.findViewById(R.id.backdrop);
+        if (backdrop != null)
+            Picasso.
+                with(getContext()).
+                load(ApiClient.TVDB_IMAGES_URL + currentSeries.banner).
+                fit().
+                centerCrop().
+                into(backdrop);
+
         if (overviewTextView != null){
             if (currentSeries.overview == null || currentSeries.overview.equals(""))
                 overviewTextView.setText(R.string.empty_overview);
@@ -120,16 +139,20 @@ public class SeriesDetailFragment extends Fragment implements DataProviderSubscr
 
     @Override
     public void receiveActors(List<Actor> actorList) {
+        progressActors.setVisibility(View.GONE);
         actorsListAdapter.updateList(actorList);
     }
 
     @Override
     public void receiveEpisodes(List<Episode> episodesList) {
+        progressEpisodes.setVisibility(View.GONE);
         episodesListAdapter.updateList(episodesList);
     }
 
     @Override
     public void receivedFail(String msg) {
+        progressEpisodes.setVisibility(View.GONE);
+        progressActors.setVisibility(View.GONE);
         Toast.makeText(getContext(), R.string.failConnection, Toast.LENGTH_LONG).show();
     }
 }

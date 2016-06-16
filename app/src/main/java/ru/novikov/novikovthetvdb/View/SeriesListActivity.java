@@ -20,6 +20,8 @@ import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 
+import com.squareup.picasso.Picasso;
+
 import ru.novikov.novikovthetvdb.Adapters.FavoritesListAdapter;
 import ru.novikov.novikovthetvdb.Adapters.ItemListClickListener;
 import ru.novikov.novikovthetvdb.Adapters.SeriesListAdapter;
@@ -31,6 +33,7 @@ import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Episode;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Series;
 import ru.novikov.novikovthetvdb.R;
 import ru.novikov.novikovthetvdb.SeriesApp;
+import ru.novikov.novikovthetvdb.View.Animation.CustomAnimation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -50,6 +53,8 @@ public class SeriesListActivity extends AppCompatActivity
 
     private SwitchCompat listSwitchCompat;
     private ViewSwitcher viewSwitcher;
+    private FloatingActionButton fab;
+    private RecyclerView seriesRecyclerView;
 
     private boolean mTwoPane;
     private long currentSeriesId;
@@ -77,15 +82,15 @@ public class SeriesListActivity extends AppCompatActivity
         if (savedInstanceState == null)
             authOnGoogle.getGoogleToken();
 
-        View seriesRecyclerView = findViewById(R.id.series_list);
-        setupSeriesRecyclerView((RecyclerView) seriesRecyclerView);
+        seriesRecyclerView = (RecyclerView) findViewById(R.id.series_list);
+        setupSeriesRecyclerView(seriesRecyclerView);
         View favoritesRecyclerView = findViewById(R.id.favorites_list);
         setupFavoritesRecyclerView((RecyclerView) favoritesRecyclerView);
 
         getApp().getDataProvider().setSubscriber(this);
         getApp().getDataProvider().getFullSeriesList(0);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
         assert fab != null;
         if (findViewById(R.id.show_detail_container) != null) {
             // large-screen layouts (res/values-w900dp).
@@ -94,8 +99,12 @@ public class SeriesListActivity extends AppCompatActivity
                 public void onClick(View view) {
                     SeriesDetailFragment fragment =
                             (SeriesDetailFragment) getSupportFragmentManager().findFragmentById(R.id.show_detail_container);
-                    if (fragment != null)
+
+                    if (fragment != null){
+                        view.startAnimation(CustomAnimation.createFabAnimation(SeriesListActivity.this, view));
                         fragment.addToFavoriteButtonClick();
+                    }
+
                 }
             });
             mTwoPane = true;
@@ -120,6 +129,7 @@ public class SeriesListActivity extends AppCompatActivity
 
     private void setupSeriesRecyclerView(@NonNull RecyclerView recyclerView) {
         seriesAdapter = new SeriesListAdapter(new ArrayList<Series>(), this);
+        seriesAdapter.setPicasso(new Picasso.Builder(this).build());
         final LinearLayoutManager linearLayoutManager = new LinearLayoutManager(this);
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -141,18 +151,32 @@ public class SeriesListActivity extends AppCompatActivity
     }
 
     /*
+        for highlight selected row
+     */
+    private void selectedView(View view){
+        View child;
+        for (int i = 0; i < seriesRecyclerView.getChildCount(); i++) {
+            child = seriesRecyclerView.getChildAt(i);
+            child.setSelected(view == child);
+        }
+    }
+
+    /*
     method calls from both recyclerViews favorites and series lists
      */
     @Override
     public void OnSeriesClick(long id, View v) {
+        selectedView(v);
         if (mTwoPane) {
             Bundle arguments = new Bundle();
             arguments.putLong(SeriesDetailFragment.ARG_ITEM_ID, id);
             SeriesDetailFragment fragment = new SeriesDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
+                    .setCustomAnimations(R.anim.fade_in, R.anim.fade_out)
                     .replace(R.id.show_detail_container, fragment)
                     .commit();
+            fab.show();
         } else {
             Context context = v.getContext();
             Intent intent = new Intent(context, SeriesDetailActivity.class);

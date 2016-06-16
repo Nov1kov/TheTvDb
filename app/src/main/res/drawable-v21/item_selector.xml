@@ -1,0 +1,16 @@
+<ripple xmlns:android="http://schemas.android.com/apk/res/android"
+    android:color="@android:color/white">
+
+    <item>
+        <selector>
+            <item android:state_selected="true">
+                <color android:color="@color/colorSelected" />
+            </item>
+
+            <item>
+                <color android:color="@android:color/transparent" />
+            </item>
+        </selector>
+    </item>
+
+</ripple>

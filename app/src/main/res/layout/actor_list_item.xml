@@ -9,8 +9,8 @@
 
     <ImageView
         android:id="@+id/actorImage"
-        android:layout_width="@dimen/actor_list_image_size"
-        android:layout_height="@dimen/actor_list_image_size" />
+        android:layout_width="@dimen/dens_list_item_height"
+        android:layout_height="@dimen/dens_list_item_height" />
 
     <LinearLayout
         android:layout_width="fill_parent"
@@ -21,12 +21,16 @@
 
     <TextView
         android:id="@+id/actorName"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?attr/textAppearanceListItem" />
 
     <TextView
         android:id="@+id/actorRole"
+        android:ellipsize="end"
+        android:maxLines="1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?attr/textAppearanceListItemSmall" />

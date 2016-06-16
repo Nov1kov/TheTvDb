@@ -8,6 +8,7 @@ import ru.novikov.novikovthetvdb.Model.DataBase.GreenDao.FavoriteItem;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Actor;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Episode;
 import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Series;
+import ru.novikov.novikovthetvdb.Model.Rest.ResponseFail;
 import ru.novikov.novikovthetvdb.Model.Rest.ResponseSuccessful;
 import ru.novikov.novikovthetvdb.Model.Rest.RestRepository;
 import ru.novikov.novikovthetvdb.Model.SharedPreferences.PreferencesRepository;
@@ -15,7 +16,7 @@ import ru.novikov.novikovthetvdb.Model.SharedPreferences.PreferencesRepository;
 /**
  *
  */
-public class DataProvider implements RestRepository.SaverToken {
+public class DataProvider implements RestRepository.SaverToken, ResponseFail {
 
     public final static int SERIES_PORTION_COUNT = 20;
 
@@ -33,6 +34,7 @@ public class DataProvider implements RestRepository.SaverToken {
         this.preferencesRepository = preferencesRepository;
         remoteRepository.setAuthToken(preferencesRepository.getKeyTvdbToken());
         remoteRepository.setSaverInfoListener(this);
+        remoteRepository.setFailListener(this);
     }
 
     public void setSubscriber(DataProviderSubscriber subscriber){
@@ -110,5 +112,11 @@ public class DataProvider implements RestRepository.SaverToken {
 
     public List<FavoriteItem> getFavoritesList() {
         return dataBaseRepository.getAllFavoritesItems(preferencesRepository.getGoogleName());
+    }
+
+    @Override
+    public void onFail(String message) {
+        for (DataProviderSubscriber subscriber : subscribers)
+            subscriber.receivedFail(message);
     }
 }

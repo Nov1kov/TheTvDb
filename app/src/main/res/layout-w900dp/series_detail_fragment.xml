@@ -21,6 +21,7 @@
         android:layout_height="wrap_content"
         android:maxHeight="100dp"
         android:padding="16dp"
+        android:ellipsize="end"
         android:textIsSelectable="true"
         />
 
@@ -28,9 +29,22 @@
         style="?android:attr/textAppearanceLarge"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp"
+        android:textAlignment="center"
         android:text="@string/actors"
         />
+
+        <LinearLayout
+            android:id="@+id/progressBar_actors"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/actorsRecyclerView"
@@ -51,9 +65,22 @@
         style="?android:attr/textAppearanceLarge"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp"
+        android:textAlignment="center"
         android:text="@string/episodes"
         />
+
+        <LinearLayout
+            android:id="@+id/progressBar_episodes"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical" >
+
+            <ProgressBar
+                android:layout_width="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/episodesRecyclerView"

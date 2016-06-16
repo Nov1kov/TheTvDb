@@ -23,8 +23,9 @@ import ru.novikov.novikovthetvdb.Model.Rest.Entities.Responses.Token;
 
 public class ApiClient {
 
-    private static final String TAG = "ApiClient";
+    private static final String LOG_TAG = "ApiClient";
     private static final String TVDB_BASE_URL = "https://api.thetvdb.com";
+    public static final String TVDB_IMAGES_URL = "http://thetvdb.com/banners/";
     private static final String TVDB_VERSION = "2";
     public static final Object TAG_CALL = new Object();
 
@@ -53,7 +54,7 @@ public class ApiClient {
         tvDbAuthApi = createService(TvDbRestApi.class);
     }
 
-    private  <S> S createService(Class<S> serviceClass) {
+    public OkHttpClient getHttpClient(){
         httpClient.addInterceptor(new Interceptor() {
             @Override
             public Response intercept(Interceptor.Chain chain) throws IOException {
@@ -71,9 +72,11 @@ public class ApiClient {
                 return chain.proceed(request);
             }
         });
+        return httpClient.build();
+    }
 
-        OkHttpClient client = httpClient.build();
-        Retrofit retrofit = builder.client(client).build();
+    private  <S> S createService(Class<S> serviceClass) {
+        Retrofit retrofit = builder.client(getHttpClient()).build();
         return retrofit.create(serviceClass);
     }
 
@@ -82,9 +85,11 @@ public class ApiClient {
         return new Callback<S>() {
             @Override
             public void onResponse(Call<S> call, retrofit2.Response<S> response) {
-                if (response.code() == 200){
+                if (response.code() == 200) {
                     responseSucc.response(response.body());
                 } else {
+                    if (response.code() == 401)
+                        setAuthToken(null);
                     if (responseFail != null) {
                         responseFail.onFail("");
                     }
